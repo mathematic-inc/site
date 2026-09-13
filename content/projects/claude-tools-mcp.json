@@ -1,0 +1,59 @@
+{
+  "slug": "claude-tools-mcp",
+  "order": 3,
+  "category": "agents",
+  "title": "File and shell tools at an HTTP endpoint",
+  "summary": "Expose file editing, search, and background shell operations to MCP clients through a Go server.",
+  "kind": "Implementation note",
+  "rationale": "Engineering rationale",
+  "tags": [
+    "Go",
+    "MCP",
+    "HTTP"
+  ],
+  "abstract": "An MCP client may need to work on files and processes in a different execution environment. claude-tools-mcp offers a familiar file-and-shell tool surface through Streamable HTTP. It implements those operations in a Go server, so clients can share an execution endpoint without depending on one editor's built-in tool implementation. [1][2]",
+  "problem": [
+    "A local stdio server normally starts as a child process of the client. That is a poor match when the working directory, installed commands, or long-running processes belong to a separate host or container. MCP's HTTP transport makes an independently hosted server possible, but a transport alone does not implement file editing or process management. [3]",
+    "The repository fills that operational gap with concrete read, write, exact-edit, glob, grep, and shell tools. The engineering rationale is portability of the tool surface across MCP clients. Its name describes the familiar operations it offers; it is a separate implementation, not a mechanism for inheriting Claude Code's permission system. [1][2]"
+  ],
+  "design": [
+    "The server registers typed tools through the MCP Go SDK. Search delegates to ripgrep. Shell operations support timeouts and background execution, with separate operations for reading output, listing shells, and terminating a process. The file tools impose size and result limits and require absolute paths. [1][2]",
+    "The HTTP handler runs in stateless protocol mode, but the application still keeps file-modification tracking and background-shell state. A deployment that distributes requests between replicas therefore needs to account for which process owns a shell; protocol statelessness does not make a running process portable between hosts. [1][2]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "A local stdio MCP server",
+      "constraint": "In the standard stdio arrangement, the client launches the server process. Its filesystem and toolchain follow that launch environment. [3]",
+      "response": "The HTTP server runs independently, allowing the operator to choose the execution host or container. [1]",
+      "tradeoff": "A local stdio server avoids exposing a network service and is sufficient when the client and workspace belong on the same machine."
+    },
+    {
+      "alternative": "An SSH shell",
+      "constraint": "SSH gives a remote command session. A client needing distinct read, edit, search, and background-output operations must add its own structured adapter around that session.",
+      "response": "This server supplies those operations as MCP tools with defined inputs and result limits. [1][2]",
+      "tradeoff": "SSH already provides transport authentication and interactive administration. This server's entry point does not add an equivalent authentication layer. [2]"
+    }
+  ],
+  "boundaries": [
+    "The checked entry point binds to localhost by default and configures HTTP timeouts and graceful shutdown. It does not install application authentication middleware. Absolute paths and file-size limits are not filesystem isolation. Network access must be controlled by the deployment, and the process should have only the host permissions its callers are meant to exercise. [2][3]",
+    "Choose it for a controlled execution environment where structured remote tools are useful. Use Earl when the intended interface is a restricted operation catalog; these two projects expose materially different levels of authority."
+  ],
+  "related": [
+    "earl",
+    "mcpr"
+  ],
+  "sources": [
+    {
+      "label": "claude-tools-mcp: tools, state, and requirements",
+      "path": "README.md"
+    },
+    {
+      "label": "Server entry point and registered tool surface",
+      "path": "cmd/claude-tools-mcp/main.go"
+    },
+    {
+      "label": "MCP: process model and HTTP transport requirements",
+      "url": "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports"
+    }
+  ]
+}

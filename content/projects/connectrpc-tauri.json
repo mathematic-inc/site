@@ -1,0 +1,56 @@
+{
+  "slug": "connectrpc-tauri",
+  "order": 9,
+  "category": "schemas",
+  "title": "Connect services inside a Tauri application",
+  "summary": "Carry Connect calls between the webview and Rust without running a loopback HTTP server.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "TypeScript",
+    "Tauri"
+  ],
+  "abstract": "A Tauri frontend and its Rust backend already share an application boundary. connectrpc-tauri carries Connect protocol traffic across that boundary, reusing Connect's serialization and streaming machinery while removing the need to host a local HTTP listener. Unary and streaming calls take different transport paths. [1]",
+  "problem": [
+    "A desktop application can expose Rust services over loopback HTTP, but then it must manage a listener, address selection, and access to that listener. Replacing RPC with unrelated Tauri commands avoids the listener while making the application responsible for rebuilding its service contract and streaming behavior.",
+    "The repository takes a third route: adapt the byte-level interfaces already offered by the Connect runtimes. This preserves a shared schema and protocol behavior while changing how a request reaches the Rust service. [1]"
+  ],
+  "design": [
+    "Unary requests use a custom ipc-connect URI scheme and invoke the Rust service through a synthetic HTTP request. Streaming calls use commands and a channel, with binary protobuf envelopes. The request pump coalesces already-produced chunks and applies backpressure; cancellation propagates from the client's AbortSignal. [1]",
+    "Connect still performs message serialization, envelope framing, trailers, and error mapping. The TypeScript adapter uses the protocol-level transport seam, enabling unary, server-streaming, client-streaming, and bidirectional methods without routing those streams through an ordinary browser HTTP transport. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "A local HTTP Connect server",
+      "constraint": "A loopback deployment requires an actual listener and a policy for which callers may reach it. Those concerns exist even though the frontend and service ship together.",
+      "response": "The custom scheme and command/channel paths reach the in-process Rust service without reserving a port. [1]",
+      "tradeoff": "HTTP is appropriate when other applications or remote clients must call the same server. This adapter serves webview-to-Rust calls."
+    },
+    {
+      "alternative": "Hand-written Tauri commands and events",
+      "constraint": "Tauri gives applications commands and channels, but the application must define payload contracts and streaming semantics. Binary RPC data encoded inside JSON arguments also requires a less direct representation. [1][2]",
+      "response": "The adapter retains Connect's wire semantics and sends binary buffers across the bridge, with a shared schema and a per-call channel. [1]",
+      "tradeoff": "A few simple commands may need no RPC layer. Tauri's native command permission model is also different from the adapter's custom-scheme unary path."
+    }
+  ],
+  "boundaries": [
+    "The unary custom-scheme path bypasses Tauri command ACL dispatch. Do not assume granting or denying a command permission authorizes every unary RPC; enforce the application's service and caller policy at the appropriate boundary. [1]",
+    "The repository reports macOS verification for the unary path and documents Android streaming's JSON-array fallback. Its published timing table describes one M-series Mac run, not a universal speed comparison. Evaluate your platform and payload sizes, and keep the distinction between protocol reuse and transport-specific behavior explicit."
+  ],
+  "related": [
+    "connectrpc-sdk",
+    "tauri-plugin-ui-inspector",
+    "protovalidate-buffa"
+  ],
+  "sources": [
+    {
+      "label": "ConnectRPC over Tauri: architecture, transport paths, benchmarks, and limitations",
+      "path": "README.md"
+    },
+    {
+      "label": "Tauri: calling Rust from the frontend",
+      "url": "https://v2.tauri.app/develop/calling-rust/"
+    }
+  ]
+}

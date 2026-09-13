@@ -1,0 +1,70 @@
+{
+  "slug": "bucket-cache-action",
+  "order": 18,
+  "category": "infrastructure",
+  "title": "Build caches with an explicit storage and save policy",
+  "summary": "Restore from S3 or GCS, renew workload credentials, and decide whether to save using the job's final state.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "TypeScript",
+    "GitHub Actions",
+    "S3 / GCS"
+  ],
+  "abstract": "A build cache spans two moments: restore near the start of a job and save during cleanup. bucket-cache-action makes storage, credentials, and that final save decision explicit. It supports S3 and native Google Cloud Storage, including workload-identity renewal in each phase, while keeping the bucket's access and retention policies under the operator's control. [1]",
+  "problem": [
+    "A job can restore dependencies with one cloud role, switch to a deployment role, and reach cleanup after the original credentials have expired or been removed. A cache implementation that relies only on the environment left behind at save time then depends on unrelated actions and their cleanup order. [1]",
+    "A useful cache may also deserve saving even when a later, unrelated step fails. Conversely, an unsuccessful dependency installation should not populate the cache just because a broad cleanup condition runs. The action lets the operator express the relevant final outcome through save-if, including the result of a step that runs after restore. [1][2]"
+  ],
+  "design": [
+    "The main phase restores an exact key or the newest match under an ordered fallback prefix. It records the storage configuration for cleanup. The post phase reads the final save-if value but reuses the original provider, paths, and key. Exact hits, lookup-only requests, failed restores, and empty file sets do not trigger automatic uploads. Separate restore and save entry points support explicit workflow composition. [1][2]",
+    "With native S3 OIDC or GCS Workload Identity Federation configured, each phase obtains its own credentials and the provider can refresh them during transfers. The action does not put credentials in restore-to-post state. Standard AWS and Google credential sources are also supported, but those sources must remain available during cleanup. [1]",
+    "Writes are immutable: S3 uses conditional writes and GCS uses a generation precondition. Downloads pin their ranges to an object version and verify the full digest before extraction. Archives use the JavaScript tar package and Node 24's zstd implementation, avoiding a system tar or compression executable. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "runs-on/cache",
+      "constraint": "RunsOn's action already supports S3. Its documented behavior includes GitHub-cache fallback when no bucket is configured and discarding existing AWS environment credentials when RUNS_ON_RUNNER_NAME is set. Operators must account for those runner-specific choices. [3]",
+      "response": "This project derives its layout from RunsOn but implements storage independently, requires an explicit bucket, and avoids runner discovery and environment-credential overrides. It also offers native GCS federation. [1]",
+      "tradeoff": "RunsOn's automatic discovery and fallback are useful inside that ecosystem. This action deliberately requires more explicit provider and identity configuration."
+    },
+    {
+      "alternative": "actions/cache",
+      "constraint": "The hosted cache applies GitHub's documented branch access rules, key lookup, and eviction policy. It does not expose an operator-selected S3 or GCS bucket as its storage backend. [4]",
+      "response": "The action stores immutable objects in the selected bucket and lets the operator configure retention and namespace access through cloud policy. [1]",
+      "tradeoff": "GitHub's managed cache handles its own trust scopes. Bucket users must enforce writer isolation with IAM; matching key names alone do not recreate those protections."
+    },
+    {
+      "alternative": "Separate cloud upload and download scripts",
+      "constraint": "A file-transfer script leaves archive integrity, fallback lookup, post-job state, and credential lifetime to each workflow author.",
+      "response": "The shared action supplies these mechanisms and evaluates the final save condition in its cleanup entry point. [1][2]",
+      "tradeoff": "A simple script remains adequate for a small, fixed artifact with different lifecycle semantics. This action is for reusable cache objects, not general artifact publishing."
+    }
+  ],
+  "boundaries": [
+    "An archive digest detects corruption, not a malicious authorized writer. Anyone who can populate a cache may influence executable dependencies read by a later job. Separate untrusted pull-request writers from trusted build or deployment caches through bucket and identity policy. [1]",
+    "Buckets must already exist. Configure retention and abandoned-upload cleanup, and account for transfer cost and storage location. The action's cache format differs from RunsOn's, so a migration starts cold. Transfer timeouts do not cover local archive creation or extraction. The repository's emulator and workflow tests are described in its documentation; this catalog does not claim an independent cloud benchmark. [1]"
+  ],
+  "related": [
+    "if-changed",
+    "smapped-traces"
+  ],
+  "sources": [
+    {
+      "label": "Bucket cache: lifecycle, identity, storage, trust model, and origin",
+      "path": "README.md"
+    },
+    {
+      "label": "Action manifest: inputs and post-job entry point",
+      "path": "action.yml"
+    },
+    {
+      "label": "runs-on/cache: S3 configuration, fallback, and credential behavior",
+      "url": "https://github.com/runs-on/cache"
+    },
+    {
+      "label": "GitHub: cache access, key matching, and eviction",
+      "url": "https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching"
+    }
+  ]
+}

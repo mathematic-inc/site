@@ -1,0 +1,67 @@
+{
+  "slug": "earl",
+  "order": 1,
+  "category": "agents",
+  "title": "A defined boundary between agents and services",
+  "summary": "Give an agent named operations while keeping request templates and credentials under operator control.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "CLI",
+    "MCP"
+  ],
+  "abstract": "An agent that can assemble arbitrary authenticated requests can also assemble requests its operator never intended. Earl separates the operation definition from the arguments an agent supplies. Versioned HCL templates describe the request; Earl resolves secrets when it executes that request. The useful boundary is the set of permitted operations and parameters. [1]",
+  "problem": [
+    "Consider an agent that needs to search issues in one repository. Giving it a general HTTP tool and a token requires another layer to constrain the destination, method, and credential use. Instructions alone do not impose those constraints on the executable request. Earl's documented motivation is to move that definition into reviewed templates. [1][2]",
+    "The template author decides which values the agent may supply. A fixed search endpoint with a query argument is a narrower capability than a parameter that accepts an arbitrary URL. That difference determines the authority of the tool; hiding a template from an MCP description does not, by itself, establish an operating-system access boundary. [2]"
+  ],
+  "design": [
+    "Earl loads an HCL operation, validates its parameters, resolves secret references from the OS credential store, renders the request, and executes it. Output rendering has no secrets namespace, and the redactor checks returned output for several representations of the secrets used by the call. HTTP, GraphQL, gRPC, Bash, and SQL operations share the template model. [1][2]",
+    "Operators can constrain network destinations, use bound SQL parameters, and configure Bash limits. The HTTP deployment adds a policy engine for caller-specific access. These controls need deliberate configuration: an argument interpolated into SQL text is different from a bound SQL parameter, and write confirmation can be bypassed by the caller's explicit yes option. [2][3]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "curl and an agent shell",
+      "constraint": "curl deliberately accepts caller-selected URLs, headers, and methods. If the agent constructs the complete command, the command surface alone does not express a repository-specific operation policy. [4]",
+      "response": "Earl supplies the request structure from an operator-owned template and exposes only its declared arguments. Secret lookup stays in the execution layer. [1]",
+      "tradeoff": "curl is the simpler fit for a trusted human making an ad hoc request. Earl adds template authorship and policy maintenance."
+    },
+    {
+      "alternative": "A custom MCP server",
+      "constraint": "MCP standardizes how clients discover and call tools; the server still has to implement its authorization and secret handling. An unrestricted tool remains unrestricted when exposed through MCP. [5]",
+      "response": "Earl provides reusable template, credential, and policy machinery, reducing how much of that behavior a team has to implement for each integration. [2][3]",
+      "tradeoff": "A bespoke server remains useful for complex stateful workflows or domain logic that a template cannot express clearly."
+    }
+  ],
+  "boundaries": [
+    "Earl does not make an agent immune to prompt injection. Untrusted responses can still influence the agent's next call. Templates with broad parameters, write access to template files, or access to other unrestricted tools can defeat the intended boundary. Apply host permissions and review template changes as executable policy. [2]",
+    "Use it when the operation set is stable enough to review and constrain. Evaluate the actual protocols, credential backends, and policies you deploy; this note does not claim a universal security guarantee or an independent security audit."
+  ],
+  "related": [
+    "claude-tools-mcp",
+    "mcpr"
+  ],
+  "sources": [
+    {
+      "label": "Earl: purpose, template execution, and quick start",
+      "path": "README.md"
+    },
+    {
+      "label": "Earl: security architecture and trust assumptions",
+      "path": "site/content/docs/how-earl-works.mdx"
+    },
+    {
+      "label": "Earl: hardening and parameter handling",
+      "path": "site/content/docs/hardening.mdx"
+    },
+    {
+      "label": "curl: command-line request options",
+      "url": "https://curl.se/docs/manpage.html"
+    },
+    {
+      "label": "MCP: transport and server responsibilities",
+      "url": "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "slug": "sqlc-gen-sqlx",
+  "order": 6,
+  "category": "schemas",
+  "title": "SQL files as the source of a Rust query API",
+  "summary": "Generate SQLx query functions, row types, and parameter types from sqlc's analysis of PostgreSQL.",
+  "kind": "Implementation note",
+  "rationale": "Engineering rationale",
+  "tags": [
+    "Rust",
+    "PostgreSQL",
+    "Code generation"
+  ],
+  "abstract": "Teams that keep reviewed SQL in dedicated files still need Rust types and callable query functions. sqlc-gen-sqlx connects sqlc's SQL analysis to SQLx execution. It generates ordinary Rust functions and row structures so the query text and the corresponding application API can be regenerated together. [1]",
+  "problem": [
+    "Writing a query function by hand duplicates information that already exists in the SQL: parameter order, selected columns, nullability, and the intended result cardinality. A schema or query change can leave the handwritten wrapper behind. The useful automation is to derive that wrapper from the analyzed query.",
+    "SQLx's checked macros solve a related problem by asking a database about a query, or by using previously prepared offline metadata. A sqlc-based workflow chooses a separate generation step that consumes the schema and SQL files. That is a different source of type information with different maintenance costs. [2]"
+  ],
+  "design": [
+    "For annotated PostgreSQL queries, the plugin emits SQL constants, typed row structs, optional parameter structs, and query functions. It handles sqlc cardinality annotations, arrays and nullable columns, type overrides, and PostgreSQL enum and composite types. Native and WebAssembly plugin distributions support sqlc's process and WASM execution modes. [1]",
+    "Generated functions accept a pool, connection, or transaction through a generated executor interface. Borrowed parameter overrides can keep input strings borrowed while output rows remain owned. Batch annotations produce streams; copy operations expose chunked bulk insertion. These are explicit generated APIs that can be reviewed with the SQL. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "SQLx query! and query_file!",
+      "constraint": "Checked macros need a compatible database during expansion or current .sqlx metadata prepared earlier. Offline mode removes the live build-time connection, but the prepared data still needs maintenance. [2]",
+      "response": "The plugin generates SQLx code from sqlc's query and schema analysis, making generation a separate, reviewable build step. [1]",
+      "tradeoff": "SQLx checks against the database's own interpretation. sqlc's analyzer has its own supported SQL surface; the two validation methods are not identical."
+    },
+    {
+      "alternative": "Hand-written SQLx wrappers",
+      "constraint": "A query and its Rust wrapper can disagree about parameter ordering or result types after an edit. The compiler cannot derive the intended SQL schema from an unchecked string alone.",
+      "response": "Regeneration updates the row types and calling interface with the query. Type overrides record deliberate application mappings in the generator configuration. [1]",
+      "tradeoff": "Hand-written wrappers are appropriate for dynamic queries or PostgreSQL behavior the generator does not support."
+    }
+  ],
+  "boundaries": [
+    "The documented target is PostgreSQL. Do not assume the plugin generates MySQL or SQLite code because SQLx supports those databases. Consumers also need the SQLx features and companion crates required by their generated types. [1]",
+    "Keep migrations, the schema supplied to sqlc, and the deployed database in agreement. Generation does not perform migrations or prove production schema compatibility. Validate representative generated queries against the database, especially after changing nullability, custom types, or type overrides."
+  ],
+  "related": [
+    "protovalidate-buffa",
+    "connectrpc-sdk"
+  ],
+  "sources": [
+    {
+      "label": "sqlc-gen-sqlx: generated API, types, annotations, and overrides",
+      "path": "README.md"
+    },
+    {
+      "label": "SQLx query macros: requirements and offline mode",
+      "url": "https://docs.rs/sqlx/latest/sqlx/macro.query.html"
+    }
+  ]
+}

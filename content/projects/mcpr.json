@@ -1,0 +1,59 @@
+{
+  "slug": "mcpr",
+  "order": 2,
+  "category": "agents",
+  "title": "One registry for several MCP clients",
+  "summary": "Maintain MCP server definitions once and translate them into each editor's native configuration.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Go",
+    "CLI",
+    "MCP"
+  ],
+  "abstract": "MCP standardizes communication with tools, but applications still store server configuration in different places and formats. MCPR keeps a central set of server definitions and writes the corresponding configuration for selected clients. Its purpose is to make a change to a command, endpoint, or argument a single maintenance operation. [1]",
+  "problem": [
+    "A developer using several AI editors can end up maintaining several copies of the same server command and environment. Updating one copy leaves another editor running an older command or endpoint. Project settings add a second dimension: a server may belong to one checkout rather than every editor session on the machine. [1]",
+    "This is a configuration distribution problem. The protocol's stdio and HTTP transport definitions do not prescribe a common on-disk editor settings file. For example, VS Code documents its own MCP configuration and management workflow. [2][3]"
+  ],
+  "design": [
+    "MCPR records stdio servers as commands, arguments, and environment values, and HTTP servers as URLs and headers. It stores global definitions in its configuration directory and can discover a project-local mcpr.json. A sync records the destination client and the selected subset of servers. Later additions or removals resynchronize those registered destinations. [1]",
+    "Client adapters translate the registry into native settings. The documented sync behavior preserves unrelated client settings. Client support is explicit, including Claude Desktop, Cursor, VS Code, Windsurf, and Zed; project-local support differs between them. A registry entry cannot grant a client a transport capability that the client itself lacks. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "Each editor's MCP settings",
+      "constraint": "Native settings provide useful client-specific controls, but editing separate files makes the operator responsible for keeping duplicated server definitions in agreement. [3]",
+      "response": "MCPR gives the shared definition one owner and translates it to the clients selected for synchronization. [1]",
+      "tradeoff": "Use native settings alone for one client or when you need a setting the MCPR adapter does not represent."
+    },
+    {
+      "alternative": "A shared configuration file or dotfile symlink",
+      "constraint": "Sharing one file only works when every consumer expects compatible keys and file structure. MCP transports do not impose that compatibility on editor configuration. [2][3]",
+      "response": "MCPR performs a format conversion instead of assuming each application can read the same file. It can also synchronize a subset of servers. [1]",
+      "tradeoff": "For clients with identical formats, a plain shared file may require less machinery."
+    }
+  ],
+  "boundaries": [
+    "MCPR distributes configuration; it does not operate the servers or prove they are trustworthy. Its documented configuration includes environment and header values, so treat the registry and generated client files according to the sensitivity of those values. [1]",
+    "Check the supported-client table and the generated settings when adopting a new editor version. Configuration schemas and transport support evolve independently. Keep client-specific settings under the ownership of the native application when they do not belong to the shared registry."
+  ],
+  "related": [
+    "earl",
+    "claude-tools-mcp"
+  ],
+  "sources": [
+    {
+      "label": "MCPR: registry, adapters, sync, and client support",
+      "path": "README.md"
+    },
+    {
+      "label": "MCP: stdio and Streamable HTTP transports",
+      "url": "https://modelcontextprotocol.io/specification/2025-06-18/basic/transports"
+    },
+    {
+      "label": "VS Code: adding and managing MCP servers",
+      "url": "https://code.visualstudio.com/docs/agent-customization/mcp-servers"
+    }
+  ]
+}

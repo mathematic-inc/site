@@ -1,0 +1,55 @@
+{
+  "slug": "vscode-latex",
+  "order": 13,
+  "category": "tools",
+  "title": "LaTeX as a source-editing workflow",
+  "summary": "Keep highlighting, formatting, linting, and snippets available without taking ownership of the build.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "TypeScript",
+    "VS Code",
+    "LaTeX"
+  ],
+  "abstract": "Some LaTeX users already have a build system and a preferred viewer. They need source-editing support in VS Code without adopting another build orchestration workflow. vscode-latex documents that narrower purpose and integrates established formatters and ChkTeX with the editor. [1]",
+  "problem": [
+    "An integrated LaTeX environment often combines editing, compilation, preview, and document navigation. That is useful when the extension owns the document workflow. A developer who already runs a build through another system may instead want the usual source-editor services to coexist with that system. [1]",
+    "Formatting and linting also need the configuration that belongs to the project. A per-editor default can conflict with a formatter's native configuration, particularly when a developer opens a file outside a workspace or works remotely."
+  ],
+  "design": [
+    "The extension supplies syntax highlighting and snippets, delegates linting to ChkTeX, and supports latexindent or tex-fmt for formatting. Remote and unsaved files are included in the documented editing workflow. Executable paths, timeouts, and lint delay are configurable. [1]",
+    "Configuration lookup walks the file's ancestors and supports explicit paths. When it finds a native formatter configuration, that configuration takes precedence over editor column-limit and indentation settings. Keeping that precedence explicit prevents two competing definitions of formatting policy. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "LaTeX Workshop",
+      "constraint": "LaTeX Workshop deliberately provides an integrated environment with compilation, preview, completion, and more. A user whose build already lives elsewhere may not need that integrated workflow. [2]",
+      "response": "vscode-latex confines its purpose to source editing and delegates formatting and linting to external tools. [1]",
+      "tradeoff": "Choose LaTeX Workshop when integrated compilation, viewing, citations, or its broader IDE features are the desired experience."
+    },
+    {
+      "alternative": "Running latexindent and ChkTeX in a terminal",
+      "constraint": "The tools can process files directly, but a terminal invocation does not itself register VS Code formatting actions, snippets, or inline editor diagnostics.",
+      "response": "The extension adapts the tools to editor actions and applies a documented configuration lookup policy. [1]",
+      "tradeoff": "Direct CLI use remains useful in CI and scripts. The extension does not replace those checks or the external executables."
+    }
+  ],
+  "boundaries": [
+    "Install a supported formatter and ChkTeX, or use the extension's documented installation assistance. Native tool configuration can override editor defaults, so diagnose the discovered configuration before changing an editor setting. [1]",
+    "This project does not compile or preview a TeX document. Pair it with an existing build and viewer workflow. That scope is the reason to choose it; it is not evidence that integrated LaTeX environments are defective."
+  ],
+  "related": [
+    "vscode-pdf",
+    "vscode-api-linter"
+  ],
+  "sources": [
+    {
+      "label": "vscode-latex: purpose, tools, configuration, and scope",
+      "path": "README.md"
+    },
+    {
+      "label": "LaTeX Workshop: integrated feature set",
+      "url": "https://github.com/James-Yu/LaTeX-Workshop"
+    }
+  ]
+}

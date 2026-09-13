@@ -1,0 +1,55 @@
+{
+  "slug": "alyt",
+  "order": 16,
+  "category": "telemetry",
+  "title": "One event contract across analytics providers",
+  "summary": "Generate typed event methods from a schema and dispatch them through interchangeable provider plugins.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "TypeScript",
+    "Analytics",
+    "Code generation"
+  ],
+  "abstract": "An application event should retain its meaning when the team changes analytics providers. alyt separates the event contract from provider-specific calls. A YAML schema can generate typed tracking methods, while plugins send those calls to the analytics services selected by the application. [1]",
+  "problem": [
+    "Calling provider SDKs throughout an application distributes vendor choices across product code. A migration then touches each call site. Event names and property names also become an informal contract: a misspelled event can silently create a second series instead of failing the build.",
+    "A shared dispatcher solves the vendor coupling, but does not by itself define the application's event vocabulary. alyt combines the dispatcher with schema-driven TypeScript generation so product events have named methods and required argument types. [1]"
+  ],
+  "design": [
+    "The core client exposes track, identify, page, and reset operations and dispatches to registered plugins. Built-in adapters cover Google Analytics, PostHog, Mixpanel, Amplitude, Plausible, and Vercel Analytics. React and Svelte bindings pass a client through component context. Providers that do not implement a method are skipped. [1]",
+    "The generator emits an event-name union, a parameter map, and tracker methods from YAML. Optional string hashing replaces the exact input with a SHA-256 digest before dispatch. Plugins can be added or removed at runtime, and individual calls can target selected providers. Events sent with no active plugins are dropped. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "Direct provider SDK calls",
+      "constraint": "Each call site chooses a vendor API and can spell events and properties independently. Switching vendors requires an adapter or a call-site migration.",
+      "response": "The application calls generated event methods and chooses providers at client construction or through plugin changes. [1]",
+      "tradeoff": "Direct SDK access is appropriate for provider-specific features that the shared interface does not express."
+    },
+    {
+      "alternative": "The analytics library by David Wells",
+      "constraint": "analytics already provides a plugin architecture and track, page, and identify methods. A common dispatcher is therefore not a unique feature of alyt. The application still needs to choose how it defines its own event contract. [2]",
+      "response": "alyt packages YAML-driven typed tracker generation with its provider adapters and framework bindings. [1]",
+      "tradeoff": "Existing analytics installations may already have suitable event typing and plugins. Migration is worthwhile only if the schema and integration reduce actual maintenance work."
+    }
+  ],
+  "boundaries": [
+    "Removing a plugin changes future dispatch through alyt; it is not a complete consent or data-deletion system for an independently loaded vendor SDK. Provider capabilities also differ, so the same call does not imply identical downstream semantics. [1]",
+    "Unsalted SHA-256 hashing is deterministic and is not a claim of anonymization. The documented implementation does not trim, lowercase, or salt inputs. Treat that option as a defined transformation, and decide whether it satisfies the application's data policy. [1]"
+  ],
+  "related": [
+    "smapped-traces",
+    "connectrpc-sdk"
+  ],
+  "sources": [
+    {
+      "label": "alyt: event generation, dispatch, plugins, hashing, and lifecycle",
+      "path": "README.md"
+    },
+    {
+      "label": "analytics: plugin architecture and tracking API",
+      "url": "https://github.com/DavidWells/analytics"
+    }
+  ]
+}

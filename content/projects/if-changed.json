@@ -1,0 +1,56 @@
+{
+  "slug": "if-changed",
+  "order": 12,
+  "category": "tools",
+  "title": "Make a dependency between edits executable",
+  "summary": "Require dependent files or named regions to change together when a diff touches an annotated block.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "CLI",
+    "CI"
+  ],
+  "abstract": "Some relationships between files are too small to justify a generator, yet too easy to forget during an edit. if-changed lets maintainers declare those relationships beside the code. It checks a diff and fails when a changed region's declared counterpart has not also changed. [1]",
+  "problem": [
+    "The motivating example is an error-code enum represented in both Rust and TypeScript. Editing one definition without the other introduces drift. A shared schema and generator can eliminate that duplication, but installing a generation pipeline for a small, isolated pair of definitions can cost more than it saves. [1]",
+    "A comment asking the next author to update another file expresses intent without enforcing it. The tool turns the instruction into a check that can run before a commit or against a pair of revisions in CI."
+  ],
+  "design": [
+    "An if-changed annotation opens a named region and a then-change annotation points to a file or named region that must also change. The command reads the diff between selected revisions, or between HEAD and the working tree by default, and reports unsatisfied dependencies. Reciprocal annotations can express a two-way relationship. [1]",
+    "Dependencies can include path lists and patterns. Naming a whole file accepts any change in that file; naming a region narrows the requirement. The tool integrates with pre-commit and offers an explicit commit-footer escape mechanism for cases where a dependent edit is intentionally unnecessary. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "A shared schema and code generation",
+      "constraint": "Generating both definitions removes manual synchronization, but requires a generator, generated-file ownership, and build integration for the representations involved. The repository identifies that setup cost in its motivating example. [1]",
+      "response": "Annotations add a diff-time reminder at the existing definitions, with no new source language to maintain. [1]",
+      "tradeoff": "Generation is stronger when feasible: it derives consistent values. if-changed only proves that a corresponding region was edited, not that its new meaning is correct."
+    },
+    {
+      "alternative": "pre-commit by itself",
+      "constraint": "pre-commit installs and runs hooks. It does not infer the semantic relationship between an enum, documentation, and a corresponding definition in another language. [2]",
+      "response": "if-changed supplies a hook with explicit cross-file edit dependencies. [1]",
+      "tradeoff": "The tools compose: pre-commit can run if-changed, while CI should check the revisions that matter for the team's merge process."
+    }
+  ],
+  "boundaries": [
+    "A meaningless change to the dependent block can satisfy the diff requirement. Keep semantic tests for contracts that must agree, and prefer generation when one representation can be derived reliably from another. [1]",
+    "Pick comparison revisions deliberately in CI. Annotations only help if the command sees the relevant changes, and suppressions deserve review because they bypass a declared dependency. Use named blocks when a whole-file change would be too weak a signal."
+  ],
+  "related": [
+    "sqlc-gen-sqlx",
+    "connectrpc-sdk",
+    "unfmt"
+  ],
+  "sources": [
+    {
+      "label": "if-changed: motivating example, annotations, diff selection, and suppression",
+      "path": "README.md"
+    },
+    {
+      "label": "pre-commit: hook installation and execution",
+      "url": "https://pre-commit.com/"
+    }
+  ]
+}

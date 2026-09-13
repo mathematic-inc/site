@@ -1,0 +1,55 @@
+{
+  "slug": "site",
+  "order": 20,
+  "category": "infrastructure",
+  "title": "A catalog that publishes its reasoning",
+  "summary": "A static, source-backed index of Mathematic's public repositories and the decisions behind them.",
+  "kind": "Repository record",
+  "rationale": "Documented motivation",
+  "tags": [
+    "HTML",
+    "CSS",
+    "JavaScript"
+  ],
+  "abstract": "A repository list shows what an organization has published, but rarely explains how the projects relate or when one is worth adopting. This site collects those explanations in a consistent reading format. Each project note states a problem, describes the mechanism, compares relevant alternatives, and records the boundary of its claims.",
+  "problem": [
+    "GitHub organizes each repository around its own code and README. A reader comparing projects must first find the repositories, then reconstruct their purposes and alternatives from documents written at different times. A short organization description cannot carry that analysis for every project.",
+    "This catalog gives readers a second entry point: search by the problem, technology, or alternative, then follow a note into its primary sources. It includes the small repository records so the public inventory remains complete without presenting setup files as implemented products."
+  ],
+  "design": [
+    "The site generates static HTML from one structured document per repository. The index and article pages exist before browser JavaScript runs. Search and category filters progressively enhance the index; article sections, source references, and related-project links remain ordinary links. [1]",
+    "The build validates repository coverage, unique identifiers, references, and related-project destinations. Article references to Mathematic source use recorded commits, except this living site record. An explicit inventory check reports new or removed public repositories so a maintainer can review their content rather than publishing generated claims automatically. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "The GitHub organization repository list",
+      "constraint": "The native list is authoritative for current repositories, but short descriptions cannot provide a consistent problem, mechanism, alternative, and tradeoff analysis for each one.",
+      "response": "The catalog adds authored notes and citations while linking back to the original repositories.",
+      "tradeoff": "The catalog is a reviewed edition, not a live substitute for GitHub's inventory. It needs content review as projects and alternatives change."
+    },
+    {
+      "alternative": "A database-backed content site",
+      "constraint": "A runtime service adds hosting and operational requirements to a publication whose main content is versioned text.",
+      "response": "The site compiles that text into static pages and deploys them through GitHub Pages. [1][2]",
+      "tradeoff": "GitHub Pages serves static assets. Features that require private data, authentication, or server-side processing need a different architecture."
+    }
+  ],
+  "boundaries": [
+    "These are engineering notes, not peer-reviewed papers. The visual format supports careful reading; it does not imply external academic endorsement. Documented historical motivations and engineering interpretations are labelled separately.",
+    "A named alternative is compared for a particular requirement, not ranked as universally better or worse. Numerical results are attributed to their source and context. Claims should change when the evidence changes."
+  ],
+  "related": [
+    "noop",
+    "if-changed"
+  ],
+  "sources": [
+    {
+      "label": "This site: source, maintenance, and verification",
+      "path": "README.md"
+    },
+    {
+      "label": "GitHub Pages: static publishing with custom workflows",
+      "url": "https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "slug": "connectrpc-sdk",
+  "order": 8,
+  "category": "schemas",
+  "title": "Resource-oriented clients from service-oriented schemas",
+  "summary": "Generate a consistent client vocabulary without reimplementing the Connect runtime.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "TypeScript",
+    "Rust",
+    "ConnectRPC"
+  ],
+  "abstract": "RPC names need enough context to stand on their own. The same names become repetitive when a client already groups them by resource. connectrpc-sdk generates a naming layer over existing Connect clients, turning service-shaped calls into a resource-oriented SDK while retaining the underlying protocol implementation. [1]",
+  "problem": [
+    "A schema might expose WorkspaceService.CreateWorkspace. Repeating both nouns in a client call gives the caller workspaceService.createWorkspace(request). The repository's motivating example instead exposes workspaces.create(request): the namespace carries the resource and the method carries the action. [1]",
+    "Writing that layer by hand introduces another contract to maintain. Renamed methods, added services, or changes to streaming signatures can leave a facade stale even though the underlying generated client is correct. Generating the naming layer keeps it coupled to the same schema."
+  ],
+  "design": [
+    "The generator derives namespaces from service names and pluralizes resource words. It removes only the relevant leading resource occurrence in a method name, matching whole words. Explicit namespace and method annotations handle cases where product terminology differs from the schema. Naming collisions fail generation rather than silently overwriting a method. [1]",
+    "TypeScript signatures follow the generated service descriptors. The Rust target builds a client with borrowed resource groups. Existing generated clients still own serialization, transport, cancellation, streaming, and error mapping. The facade changes the shape of the calling API without introducing another wire protocol. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "The standard Connect client",
+      "constraint": "Connect already creates typed clients from service descriptors. Its direct service-level API is sufficient for calling an RPC, but does not by itself choose a product's resource-oriented aggregate vocabulary. [2]",
+      "response": "connectrpc-sdk derives that vocabulary and groups services behind a client for the protobuf package. [1]",
+      "tradeoff": "Use the direct client when schema names are already clear or when exact service-level correspondence is more useful than an aggregate SDK."
+    },
+    {
+      "alternative": "A hand-written SDK facade",
+      "constraint": "Every wrapper signature and rename becomes another place to update after a schema change. Cross-service naming collisions also require a convention.",
+      "response": "Generation derives names, carries types through, and rejects ambiguous results. Annotations preserve deliberate exceptions in the schema. [1]",
+      "tradeoff": "Handwritten code remains the right place for multi-call workflows, caching policies, or business operations that are not a direct RPC facade."
+    }
+  ],
+  "boundaries": [
+    "English pluralization and naming conventions are assumptions, so inspect the generated public API and annotate exceptions. A stable protobuf service does not automatically imply a stable derived SDK name after a naming-rule change. [1]",
+    "The Rust facade returns the response message for unary calls; callers that need transport headers or trailers can use the underlying generated client. Keep the generator compatible with the Connect and message generators documented for the target language."
+  ],
+  "related": [
+    "connectrpc-tauri",
+    "protovalidate-buffa",
+    "ts-japi"
+  ],
+  "sources": [
+    {
+      "label": "Connect SDK: motivating example, derivation, collision rules, and target APIs",
+      "path": "README.md"
+    },
+    {
+      "label": "Connect: typed clients from service descriptors",
+      "url": "https://connectrpc.com/docs/web/getting-started/"
+    }
+  ]
+}

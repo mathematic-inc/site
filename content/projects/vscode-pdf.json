@@ -1,0 +1,63 @@
+{
+  "slug": "vscode-pdf",
+  "order": 14,
+  "category": "tools",
+  "title": "PDF viewing within the editor",
+  "summary": "Host Mozilla PDF.js in a VS Code custom editor with an explicit document and webview lifecycle.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "TypeScript",
+    "VS Code",
+    "PDF.js"
+  ],
+  "abstract": "A generated PDF is often part of the same workspace as the source that produced it. vscode-pdf integrates Mozilla PDF.js into VS Code as a read-only custom editor. The project keeps the integration focused on viewing, with the renderer and the editor adapter carrying separate responsibilities. [1][2]",
+  "problem": [
+    "Opening a PDF in a separate viewer breaks the editor's tab-level context. Embedding a renderer solves that workflow problem, but introduces integration work: resource URLs, document lifetime, webview configuration, and cleanup when a document closes.",
+    "The README describes concerns with older marketplace viewers, including dependency age and lifecycle problems. It does not name affected extensions or provide a comparative test report. The defensible case for this project is its focused integration and inspectable implementation, rather than a blanket claim that competing viewers leak memory. [1]"
+  ],
+  "design": [
+    "The extension registers a VS Code read-only custom editor and hosts a bundled PDF.js viewer. It translates local resource paths into webview URLs, passes viewer settings through escaped configuration, and limits local resource roots. A content security policy specifies the resources the embedded viewer can use. [2]",
+    "Document events and a webview collection connect document lifetime to the viewer. The provider disposes registered document listeners when the document is deleted. These are concrete lifecycle mechanisms; their presence does not prove the absence of every leak or refresh defect. [2]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "The standalone PDF.js viewer",
+      "constraint": "PDF.js provides rendering and a browser viewer. It does not by itself register a VS Code custom editor or manage the surrounding editor document lifecycle. [3]",
+      "response": "vscode-pdf supplies that integration and reuses the PDF.js rendering implementation. [1][2]",
+      "tradeoff": "A standalone browser viewer is sufficient when editor integration is unnecessary and avoids installing a VS Code extension."
+    },
+    {
+      "alternative": "The viewer in a full LaTeX environment",
+      "constraint": "An integrated LaTeX workflow couples PDF viewing with TeX-oriented build and navigation features. That is a broader installation than a user opening arbitrary PDFs may need. [4]",
+      "response": "This extension's documented purpose is PDF viewing independent of the tool that produced the document. [1]",
+      "tradeoff": "Use a LaTeX-specific environment when synchronized source navigation and integrated compilation are part of the task."
+    }
+  ],
+  "boundaries": [
+    "The documented current viewer requires VS Code 1.95 or later. PDF.js compatibility and security maintenance remain ongoing dependencies, so use the renderer bundled with the extension version being evaluated. [1]",
+    "This note does not certify the viewer as leak-free or faster than another extension. Repeated open/close behavior and document refresh need workload-specific testing. PDF content editing and TeX compilation fall outside the documented purpose."
+  ],
+  "related": [
+    "vscode-latex",
+    "vscode-api-linter"
+  ],
+  "sources": [
+    {
+      "label": "vscode-pdf: purpose, installation, and requirements",
+      "path": "README.md"
+    },
+    {
+      "label": "PDF custom editor provider: resources, CSP, and lifecycle",
+      "path": "src/pdf-viewer-provider.ts"
+    },
+    {
+      "label": "Mozilla PDF.js: project and browser viewer",
+      "url": "https://mozilla.github.io/pdf.js/"
+    },
+    {
+      "label": "LaTeX Workshop: integrated PDF workflow",
+      "url": "https://github.com/James-Yu/LaTeX-Workshop"
+    }
+  ]
+}

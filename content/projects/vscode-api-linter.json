@@ -1,0 +1,60 @@
+{
+  "slug": "vscode-api-linter",
+  "order": 15,
+  "category": "tools",
+  "title": "API design feedback where the schema is edited",
+  "summary": "Run Google's API Linter on protobuf files and turn AIP violations into VS Code diagnostics.",
+  "kind": "Implementation note",
+  "rationale": "Engineering rationale",
+  "tags": [
+    "TypeScript",
+    "VS Code",
+    "Protobuf"
+  ],
+  "abstract": "A protobuf file can compile while violating an API design convention. Google's API Linter checks Google API Improvement Proposals; vscode-api-linter brings those checks into the editing loop. The extension adapts the linter's output to inline diagnostics rather than defining a second set of API rules. [1][2]",
+  "problem": [
+    "API design constraints extend beyond protobuf syntax. Teams following AIPs need feedback on the shape and conventions of their APIs, and a failure found only in CI arrives after the author has moved away from the edit. The useful intervention is to run the same rule engine near the source change. [2]",
+    "A linter invoked outside the project's build environment can also fail to resolve imports or use the wrong configuration. An editor adapter needs a way to reach the project's command and include paths instead of assuming one global executable layout."
+  ],
+  "design": [
+    "The extension activates for proto and proto3 files, runs the linter on save, and offers a manual command. Diagnostics appear in the editor and the Problems panel. The rule implementation stays in the separately installed api-linter tool. [1]",
+    "Configuration accepts a command array, so a project can invoke a wrapper such as a Bazel target. It also exposes the linter configuration file and proto import paths. This lets the editor invoke the project's chosen linter environment without embedding a build system into the extension. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "api-linter in CI or a terminal",
+      "constraint": "The CLI checks the right AIP rules, but a separate invocation requires the author to translate its output back to the editor and may delay feedback until the next check. [2]",
+      "response": "The extension runs that engine on save and presents file-position diagnostics in VS Code. [1]",
+      "tradeoff": "Keep CI checks for enforcement across all contributors. An editor extension only helps the developers who install and configure it."
+    },
+    {
+      "alternative": "Buf lint",
+      "constraint": "Buf lint has its own rule sets for protobuf consistency. A team requiring Google's specific AIP rules needs the corresponding rule engine; generic protobuf linting is not a guarantee of AIP conformance. [2][3]",
+      "response": "This adapter invokes Google's API Linter with its native configuration and import paths. [1]",
+      "tradeoff": "Buf lint remains useful for its own checks. The tools can coexist; this extension does not replace Buf's schema tooling."
+    }
+  ],
+  "boundaries": [
+    "The extension requires api-linter or a working custom command. Its save-triggered workflow should not be described as a complete check of every unsaved keystroke. Match import paths and configuration to CI to avoid contradictory diagnostics. [1]",
+    "Use it when AIPs are an intentional API policy. A team using different conventions should choose rules that fit its contract rather than treating Google's style as a universal requirement."
+  ],
+  "related": [
+    "protovalidate-buffa",
+    "connectrpc-sdk",
+    "vscode-latex"
+  ],
+  "sources": [
+    {
+      "label": "VS Code API Linter: triggers, diagnostics, and configuration",
+      "path": "README.md"
+    },
+    {
+      "label": "Google API Linter: AIP rule engine",
+      "url": "https://linter.aip.dev/"
+    },
+    {
+      "label": "Buf: protobuf lint rules and categories",
+      "url": "https://buf.build/docs/lint/"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "slug": "addr-spec-rs",
+  "order": 10,
+  "category": "tools",
+  "title": "Parse an address as syntax, not just a string",
+  "summary": "Parse and serialize UTF-8 email addr-spec values with optional normalization and precise errors.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "Parsing",
+    "Email"
+  ],
+  "abstract": "Applications often need more than a boolean answer to whether an email address looks plausible. addr-spec-rs parses the local part and domain according to the addr-spec grammar and can serialize the resulting representation. Optional Unicode normalization and grammar features make those decisions explicit. [1]",
+  "problem": [
+    "An email address can contain quoted syntax, international characters, and optional grammar that a simple split at the at-sign does not describe. An application that wants structured values and useful parse errors needs a parser with a defined acceptance policy, rather than a pattern chosen from a few familiar addresses. [1][3]",
+    "Validation and representation are also different tasks. A string wrapper can confirm accepted syntax while retaining the original spelling. An application comparing or serializing addresses may instead want parsed parts and a normalization policy. That policy must remain separate from provider-specific mailbox identity."
+  ],
+  "design": [
+    "The crate exposes parsing and serialization for RFC 5322 addr-spec with RFC 6532 UTF-8 extensions. NFC normalization is enabled by default. Comments, domain literals, and whitespace are separate features, and the crate supports no_std use. Errors identify positions in the input. [1]",
+    "The representation deliberately does not preserve every presentation detail. With the corresponding features enabled, the parser can accept comments and folding whitespace, but serialization does not reproduce comments or transport-dependent folding. Applications can retrieve serialized local and domain parts when they need to control folding themselves. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "email_address",
+      "constraint": "The current crate supports ASCII and UTF-8, including quoted local parts. Its documented scope does not include all header productions such as folding whitespace and comments. A claim that it lacks Unicode support would be wrong. [2]",
+      "response": "addr-spec provides optional parsing of comments and whitespace, NFC normalization, and a parsed serialization model. [1]",
+      "tradeoff": "email_address is a reasonable fit when an application needs a validated string and its documented grammar is sufficient."
+    },
+    {
+      "alternative": "A custom email regex",
+      "constraint": "A pattern's accepted language depends on what its author encoded. A short pattern for common addresses omits parts of the RFC grammar; adding cases also makes diagnostics harder to localize. [3]",
+      "response": "A dedicated parser gives the application explicit feature switches and position-based parse failures. [1]",
+      "tradeoff": "A deliberately narrow product input policy can still use a simple check, provided the application describes that policy rather than calling it complete email validation."
+    }
+  ],
+  "boundaries": [
+    "Successful parsing does not prove that a mailbox exists, can receive mail, or belongs to a user. Nor does Unicode normalization establish that two addresses route to the same inbox. Provider-specific aliasing and delivery verification are separate concerns.",
+    "Do not discard comments or normalize input if the application requires exact archival round trips. Choose feature flags from the grammar you need to consume. This catalog makes no general speed or uniqueness claim across mail providers."
+  ],
+  "related": [
+    "unfmt",
+    "ts-japi"
+  ],
+  "sources": [
+    {
+      "label": "addr-spec: supported grammar, features, and serialization caveats",
+      "path": "README.md"
+    },
+    {
+      "label": "email_address: current accepted syntax and wrapper model",
+      "url": "https://docs.rs/email_address/latest/email_address/"
+    },
+    {
+      "label": "RFC 5322: addr-spec grammar",
+      "url": "https://www.rfc-editor.org/rfc/rfc5322#section-3.4.1"
+    }
+  ]
+}

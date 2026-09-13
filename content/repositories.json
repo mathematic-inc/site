@@ -1,0 +1,146 @@
+{
+  "reviewed": "2026-09-12",
+  "organization": "mathematic-inc",
+  "repositories": [
+    {
+      "name": "ts-japi",
+      "sha": "32bb6dafbae83942c964347c13151fcf2a46431e",
+      "language": "TypeScript",
+      "description": "Zero-dependency TypeScript library for serializing data to the JSON:API specification with full type safety, relationships, links, and pagination",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "vscode-latex",
+      "sha": "b9e17e6532c97bd384f7ce4ac56dd31406ec146b",
+      "language": "TypeScript",
+      "description": "VS Code extension providing LaTeX syntax highlighting, formatting via latexindent, linting via ChkTeX, and snippets for developer-focused LaTeX editing",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "vscode-pdf",
+      "sha": "1153346694f457bc7b4c73c9b0e95b629f02dc03",
+      "language": "JavaScript",
+      "description": "Lightweight, up-to-date PDF viewer extension for VS Code powered by the latest pdf.js with no memory leaks or debouncing issues",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "vscode-api-linter",
+      "sha": "894c5eb96337fec3f1e2186e083451910696e80d",
+      "language": "Pkl",
+      "description": "VS Code extension that lints Protobuf API files using Google's API Linter (api-linter) with full configuration support",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "addr-spec-rs",
+      "sha": "5555b28ba5407c68654dbadcb442411ec55255cc",
+      "language": "Rust",
+      "description": "A wicked fast UTF-8 email address parser and serializer conforming to RFC 5322 and RFC 6532",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "unfmt",
+      "sha": "4e951d6c118b0d4e437c27e81ecd07e892ce1a31",
+      "language": "Rust",
+      "description": "Compile-time string pattern matching that reverses format! interpolation \u2014 a lightweight regex alternative with no runtime compilation cost",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "if-changed",
+      "sha": "09319355c2ffc2684c38313f01f7a1b6983aada0",
+      "language": "Rust",
+      "description": "CLI tool that enforces synchronized changes across files using if-changed/then-change comment annotations in diffs",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "claude-tools-mcp",
+      "sha": "6f7937964f46739fd61b582625b0da509353d21f",
+      "language": "Go",
+      "description": "MCP server that exposes Claude Code's file and shell tools (bash, read, write, edit, glob, grep) over HTTP for remote use by any MCP client",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "mcpr",
+      "sha": "af29f67f340412b28a9c53bd611422e80575517f",
+      "language": "Go",
+      "description": "CLI tool to manage and sync Model Context Protocol server configs across AI editors \u2014 Claude Desktop, Cursor, VS Code, Windsurf, Zed, and more",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "noop",
+      "sha": "d36254281d8e9c128db53678c47f76de5c7d7ad9",
+      "language": "Pkl",
+      "description": "A no-operation placeholder repository",
+      "license": null
+    },
+    {
+      "name": "earl",
+      "sha": "fc9204117745c4c3510012400e7b22b5a3355b8f",
+      "language": "Rust",
+      "description": "Secure CLI proxy for AI agents \u2014 HCL-defined operation templates with OS keychain secrets, MCP integration, and prompt injection protection",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "alyt",
+      "sha": "b0499500c30d801c697d22101acb2e6943dd8cd8",
+      "language": "TypeScript",
+      "description": "All-in-one analytics SDK for TypeScript \u2014 unified API for GA, PostHog, Mixpanel, Amplitude, Plausible, and Vercel Analytics with YAML codegen and React bindings",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "smapped-traces",
+      "sha": "b811c4ad0195c66fec31e0851fed78881366e955",
+      "language": "TypeScript",
+      "description": "Source map resolution for OpenTelemetry \u2014 automatically resolves minified stack traces back to original source locations using debug IDs",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "sqlc-gen-sqlx",
+      "sha": "a1c7e5e844467eeb793fd67934526e3916e391aa",
+      "language": "Rust",
+      "description": null,
+      "license": null
+    },
+    {
+      "name": "protovalidate-buffa",
+      "sha": "490ac4201b8226c4412c4fec30ad971e86a78121",
+      "language": "Rust",
+      "description": "Static-codegen protovalidate for the buffa Rust protobuf runtime",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "connectrpc-tauri",
+      "sha": "e742f770abe89707e7add73257673ccf495a8434",
+      "language": "Rust",
+      "description": "Connect RPC transport over Tauri IPC",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "connectrpc-sdk",
+      "sha": "ba0ad915eb6e6697b98cb41bfc926008c5828494",
+      "language": "TypeScript",
+      "description": "Generates idiomatic, namespaced client SDKs from ConnectRPC schemas, for TypeScript and Rust",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "tauri-plugin-ui-inspector",
+      "sha": "73a5457c3b0dfd7ba6d7e50a23f0558c8ceea308",
+      "language": "Rust",
+      "description": "Inspect, capture, and reference Tauri UI elements for coding agents",
+      "license": "Apache-2.0"
+    },
+    {
+      "name": "bucket-cache-action",
+      "sha": "714dccf2713411d847f1919303d78bbd5c342f32",
+      "language": "TypeScript",
+      "description": "S3 and GCS caching for GitHub Actions with configurable post-job saves and renewable workload identity credentials",
+      "license": "MIT"
+    },
+    {
+      "name": "site",
+      "sha": "main",
+      "language": "HTML",
+      "description": "Mathematic Inc. research notes and repository catalog",
+      "license": "Apache-2.0"
+    }
+  ]
+}

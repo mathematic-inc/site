@@ -1,0 +1,55 @@
+{
+  "slug": "tauri-plugin-ui-inspector",
+  "order": 4,
+  "category": "agents",
+  "title": "A durable reference to a running interface",
+  "summary": "Capture native pixels, DOM semantics, and optional source metadata in a reference a coding agent can resolve.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "TypeScript",
+    "Tauri"
+  ],
+  "abstract": "A screenshot tells a coding agent what an interface looks like, but it does not identify the element's role, locator, or source file. tauri-plugin-ui-inspector packages that context with an actual native-window capture and gives the selection a durable reference. The reference can be inspected later and checked against the running interface. [1]",
+  "problem": [
+    "An instruction such as 'fix this button' loses precision when a page has several similar buttons. A coordinate can move after a resize. A CSS selector can match a different node after a render. An image alone requires the agent to infer both the element's identity and the code that produced it.",
+    "The plugin addresses this by recording evidence at selection time: accessibility semantics, ranked locators with uniqueness information, nearby DOM context, and optional framework source metadata. The reference names a particular observation, not just a string that happens to match something now. [1]"
+  ],
+  "design": [
+    "The frontend picker chooses an element and gathers its semantics. The Rust backend captures the desktop compositor's native window output, computes the element rectangle in that bitmap's coordinate space, and stores the reference with window and element images. Svelte, React, and Vue adapters can add development source information without making a framework mandatory. [1]",
+    "The CLI uses a local socket or named pipe to request selections and resolve stored references. Resolution tries previously unique locators, then checks the original tag, role, and accessible name. An ambiguous or missing match produces a failure instead of selecting a nearby element. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "html2canvas",
+      "constraint": "html2canvas reconstructs a rendering from the DOM and the CSS features it supports. Its documentation says the result may differ from the actual display. [2]",
+      "response": "The inspector crops the native capture, so the selected pixels come from the same bitmap as the window, including rendered canvas and WebGL content. [1]",
+      "tradeoff": "Native capture needs platform support and permissions. A DOM renderer can run in an ordinary browser without a native plugin."
+    },
+    {
+      "alternative": "A screenshot plus a hand-written selector",
+      "constraint": "The screenshot has no semantic identity, while the selector alone records no evidence that it uniquely identified the intended element.",
+      "response": "A reference retains both the visual observation and locator evidence, with a strict later resolution step. Source metadata can take the agent to the component. [1]",
+      "tradeoff": "A manually supplied screenshot remains enough for broad visual feedback. The plugin earns its integration cost when agents need repeatable element-level references."
+    }
+  ],
+  "boundaries": [
+    "Source locations depend on development metadata and may be absent in production. Closed shadow roots remain opaque. Native capture can fail because of screen-recording permissions, protected windows, or compositor restrictions; the repository documents different levels of platform verification. [1]",
+    "Text and attribute redaction do not erase a secret already painted into screenshot pixels. Treat stored captures as sensitive. The reference is an aid to inspection and source navigation, not a replacement for an application's behavior tests."
+  ],
+  "related": [
+    "connectrpc-tauri",
+    "connectrpc-sdk"
+  ],
+  "sources": [
+    {
+      "label": "UI inspector: reference model, capture, resolution, and platform support",
+      "path": "README.md"
+    },
+    {
+      "label": "html2canvas: rendering method and limitations",
+      "url": "https://html2canvas.hertzen.com/documentation"
+    }
+  ]
+}

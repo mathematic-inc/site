@@ -1,0 +1,66 @@
+{
+  "slug": "protovalidate-buffa",
+  "order": 7,
+  "category": "schemas",
+  "title": "Validation compiled for Buffa message types",
+  "summary": "Turn buf.validate annotations and CEL rules into Rust validators for owned messages and borrowed views.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "Protobuf",
+    "Code generation"
+  ],
+  "abstract": "A protobuf validation rule is only useful if it can run against the application's actual message types. protovalidate-buffa compiles buf.validate annotations into Validate implementations for Buffa's owned and borrowed representations. CEL rules become native Rust during generation, keeping a CEL interpreter out of the validation path. [1]",
+  "problem": [
+    "The repository documents an original compatibility gap: the Rust validators considered at its creation targeted Prost, while Buffa uses a different generated representation with borrowed views. Converting each request to a separate model solely to validate it undermines the reason for using that representation. [1]",
+    "Runtime rules also move some failures later in the lifecycle. A malformed expression or a reference to a nonexistent field should be found while generating the application if the schema is already known. Static generation gives the compiler a concrete validation program to check. [1]"
+  ],
+  "design": [
+    "The plugin reads buf.validate extensions from descriptors and emits direct field walks for Buffa messages and views. A runtime crate provides the Validate trait, rule helpers, and structured violations. An optional Connect integration inserts request validation at handler entry without first converting a borrowed request into an owned message. [1]",
+    "The repository reports 2,872 passing cases in the upstream conformance harness, including proto2, proto3, and editions 2023. That is the maintainer's recorded result at the cited revision, not a new conformance run performed for this catalog. Generator and Buffa versions must remain compatible because generated field and view shapes are part of the integration. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "Descriptor-driven prost-protovalidate",
+      "constraint": "The runtime Validator reads descriptors and compiles rules, then caches them for reuse. That is useful for dynamic schemas but adds runtime rule machinery when the schema is fixed. [2]",
+      "response": "This project's documented path emits field-specific Rust, including CEL expressions, before the application runs. [1]",
+      "tradeoff": "Current prost-protovalidate also documents a generated validation path. Static validation is therefore not an exclusive capability; compare the specific backend, rule coverage, and integration you need. [2]"
+    },
+    {
+      "alternative": "prost-protovalidate-build with Buffa",
+      "constraint": "Version 0.6.0 documents a Buffa backend that generates direct checks for standard rules. Messages with CEL use a configured skip, build error, or embedded runtime bridge; the native path does not compile those CEL rules into direct checks. [3]",
+      "response": "protovalidate-buffa transpiles CEL into Rust during generation and emits validators for the owned and borrowed Buffa representations. [1]",
+      "tradeoff": "The distinction is the CEL execution path and integration model, not the mere existence of Buffa support. Evaluate the rule set your schema uses and the dependency cost of each chosen configuration. [1][3]"
+    },
+    {
+      "alternative": "Validation written in handlers",
+      "constraint": "The protobuf contract and the handler checks become separate definitions. A rule added to the schema has no effect on a handler that does not implement it.",
+      "response": "The plugin derives validators from the annotations, and the Connect macro can apply them at entry. [1]",
+      "tradeoff": "Authorization, database-dependent checks, and business invariants still belong in application code; schema validation cannot replace them."
+    }
+  ],
+  "boundaries": [
+    "The original motivation is historical context. Current prost-protovalidate-build supports Buffa and static standard-rule validation. For schemas that use CEL, compare native transpilation here against the alternative's documented runtime-bridge path. [1][3]",
+    "The cited repository targets Buffa 0.9.1 and ConnectRPC 0.9. Keep message generation and validator generation in step, including field-naming options. Passing a finite conformance suite is evidence of behavior for those cases; it is not a proof for all future schema revisions."
+  ],
+  "related": [
+    "connectrpc-tauri",
+    "connectrpc-sdk",
+    "vscode-api-linter"
+  ],
+  "sources": [
+    {
+      "label": "protovalidate-buffa: motivation, generated validation, compatibility, and reported conformance",
+      "path": "README.md"
+    },
+    {
+      "label": "prost-protovalidate: runtime and generated validation interfaces",
+      "url": "https://docs.rs/prost-protovalidate/latest/prost_protovalidate/"
+    },
+    {
+      "label": "prost-protovalidate-build 0.6.0: Buffa backend and CEL handling",
+      "url": "https://docs.rs/prost-protovalidate-build/latest/prost_protovalidate_build/"
+    }
+  ]
+}

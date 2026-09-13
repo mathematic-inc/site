@@ -1,0 +1,55 @@
+{
+  "slug": "unfmt",
+  "order": 11,
+  "category": "tools",
+  "title": "Match the structure of a formatted string",
+  "summary": "Compile literal-and-capture patterns into Rust code without compiling a pattern at runtime.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "Rust",
+    "Parsing",
+    "Macros"
+  ],
+  "abstract": "Many parsing jobs consist of fixed text with a few variable fields: the shape of a format string in reverse. unfmt provides that narrower pattern language as a compile-time macro. It is useful when a general regular expression carries more syntax and runtime setup than the input format requires. [1]",
+  "problem": [
+    "A parser for a predictable log line often needs to verify a delimiter and return the text between two literals. Repeated splitting distributes the format across several operations. A regular expression centralizes the shape, but its pattern still needs compilation when the program runs unless another mechanism has already done that work. [2]",
+    "unfmt keeps the expected text and captures in a single pattern. Its purpose is a convenient static parser for this particular class of input, rather than a general-purpose replacement for regular expressions or a parser for recursive grammars. [1]"
+  ],
+  "design": [
+    "The unformat macro accepts literal text with unnamed, indexed, or named captures. Captures can use a FromStr type to convert the extracted text. An optional whole-input match mode rejects surrounding unmatched input. The pattern is processed at compile time, while matching and any captured-value conversion happen at runtime. [1]",
+    "The language excludes ambiguous consecutive captures and does not backtrack. Those constraints make the intended decomposition visible: a capture needs enough literal structure around it to define a useful boundary. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "The regex crate",
+      "constraint": "Regex::new compiles a pattern at runtime. The crate documents avoiding repeated compilation, and current versions also provide a macro that caches the compiled regex. It is inaccurate to say every regex match recompiles its pattern. [2]",
+      "response": "unfmt generates the literal/capture matching structure at compile time, avoiding runtime pattern compilation for its smaller language. [1]",
+      "tradeoff": "regex supports richer matching, including alternation and character classes. Cached regexes are often the right answer when those features are needed."
+    },
+    {
+      "alternative": "Manual split and strip operations",
+      "constraint": "Several independent operations can obscure which delimiters define the complete input format and which captures should be typed.",
+      "response": "A single pattern records the literals, capture order, and optional conversions together. Whole-input mode makes full consumption explicit. [1]",
+      "tradeoff": "One split_once can be clearer for a two-part input. A macro is useful only when it makes the format easier to read and maintain."
+    }
+  ],
+  "boundaries": [
+    "Use explicit whole-input matching when trailing or leading input must be rejected. Choose patterns with unambiguous delimiters, and test failures as well as successful examples. The absence of backtracking is a semantic restriction, not a claim that every possible parsing workload becomes faster. [1]",
+    "Patterns known only at runtime need a different tool. Recursive or context-sensitive input belongs in a parser designed for that grammar. This note claims elimination of runtime pattern compilation, not elimination of runtime parsing work."
+  ],
+  "related": [
+    "addr-spec-rs",
+    "if-changed"
+  ],
+  "sources": [
+    {
+      "label": "unfmt: captures, typed conversion, whole-input matching, and restrictions",
+      "path": "README.md"
+    },
+    {
+      "label": "regex: compilation, caching, and pattern capabilities",
+      "url": "https://docs.rs/regex/latest/regex/"
+    }
+  ]
+}

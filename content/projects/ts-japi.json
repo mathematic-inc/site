@@ -1,0 +1,62 @@
+{
+  "slug": "ts-japi",
+  "order": 5,
+  "category": "schemas",
+  "title": "A serialization model for JSON:API documents",
+  "summary": "Describe resources and relationships in TypeScript without tying the response format to a web framework.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": [
+    "TypeScript",
+    "JSON:API"
+  ],
+  "abstract": "JSON:API requires more than a JSON-shaped response. Resource identity, relationship linkage, included resources, and links have distinct meanings. ts-japi represents these concerns with composable TypeScript serializers so an API can share document construction across handlers and data sources. Its published package has no runtime dependencies. [1][2]",
+  "problem": [
+    "A controller that constructs a response by hand has to preserve the same rules every time it includes another resource. JSON:API compound documents require linkage to primary data and restrict duplicate resource objects. A nested JavaScript object and a valid compound document are not interchangeable. [3]",
+    "The maintenance problem grows when several endpoints return the same resource with different includes, links, or metadata. Repeating serialization logic in handlers makes each endpoint another place to update when a resource's representation changes. ts-japi puts that representation beside a reusable resource serializer. [1]"
+  ],
+  "design": [
+    "Serializer handles the primary resource. Relator connects a resource to an asynchronously fetched related value and its serializer; Linker, Metaizer, and Paginator define the corresponding document elements. Include paths or a bounded depth control traversal into related resources. A serializer getter can break circular construction dependencies. [1]",
+    "The API uses generics for resource data and relationship callbacks. Separate error and polymorphic serializers cover error documents and mixed resource types. These facilities organize response construction; the application still owns authorization, data fetching, and the cost of fetching a relationship. [1]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "Hand-written JSON:API responses",
+      "constraint": "Every endpoint must preserve identity, linkage, and inclusion rules while constructing its own objects. A missing relationship can make an otherwise valid JSON response an invalid compound document. [3]",
+      "response": "Reusable serializers and relators centralize document construction and resource traversal. [1]",
+      "tradeoff": "For a small endpoint with a fixed response, a hand-written object and focused specification tests may be easier to maintain."
+    },
+    {
+      "alternative": "jsonapi-serializer",
+      "constraint": "jsonapi-serializer already supports relationships, included resources, links, and metadata. Its documented interface organizes those through nested option objects; it is not missing the JSON:API relationship model. [4]",
+      "response": "ts-japi offers a different composition model: resource-typed serializers and explicit asynchronous Relator callbacks, with separate link and metadata objects. [1]",
+      "tradeoff": "jsonapi-serializer also supplies deserialization. ts-japi explicitly does not, so it is not a substitute for that part of an application. [1][4]"
+    }
+  ],
+  "boundaries": [
+    "Deep relationship traversal can multiply database work. Set inclusion rules deliberately and arrange batching or caching in the data layer where needed. A serializer is not an ORM or a query optimizer. [1]",
+    "The default declared JSON:API version is 1.0. Do not infer complete support for every JSON:API 1.1 extension from the project name. Use the options and behavior of the pinned implementation, and test the contract your API promises. This note makes no exclusivity claim about TypeScript or recursive inclusion."
+  ],
+  "related": [
+    "connectrpc-sdk",
+    "vscode-api-linter"
+  ],
+  "sources": [
+    {
+      "label": "ts-japi: serialization, composition, includes, and scope",
+      "path": "README.md"
+    },
+    {
+      "label": "ts-japi: package manifest",
+      "path": "package.json"
+    },
+    {
+      "label": "JSON:API: compound document requirements",
+      "url": "https://jsonapi.org/format/#document-compound-documents"
+    },
+    {
+      "label": "jsonapi-serializer: supported serialization and deserialization",
+      "url": "https://github.com/SeyZ/jsonapi-serializer"
+    }
+  ]
+}
