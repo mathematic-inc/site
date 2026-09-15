@@ -8,7 +8,7 @@ The publication has a searchable index and a static article for each repository.
 
 ## Development
 
-Use Node.js 24 or later. Install development dependencies, build the publication, and start the preview server:
+Use Node.js 26.8.2 or later. Install development dependencies, build the publication, and start the preview server:
 
 ```sh
 npm ci
@@ -57,7 +57,7 @@ When adding or reviewing a note:
 
 The validator rejects missing records, duplicate identifiers, incomplete comparisons, missing or unused source references, invalid related links, and unpinned project revisions. The site repository's own record uses `main` because it describes this living publication. Other project sources are pinned. Upstream documentation can change, so recheck it when revising a comparison.
 
-The initial edition contains 18 implementation notes and two repository records: `noop` and this site. These notes are engineering analysis, not peer-reviewed papers. Reported conformance numbers remain attributed to their original repository; this site does not claim to have rerun each project's tests or independently measured comparative performance.
+The catalog contains 19 implementation notes and two repository records: `noop` and this site. These notes are engineering analysis, not peer-reviewed papers. Reported conformance numbers remain attributed to their original repository; this site does not claim to have rerun each project's tests or independently measured comparative performance.
 
 ## Deployment
 

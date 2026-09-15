@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Mathematic Inc. research notes and repository catalog",
   "license": "Apache-2.0",
-  "engines": { "node": ">=22" },
+  "engines": { "node": ">=26.8.2" },
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "npm run build && node --watch scripts/serve.mjs",

@@ -11,9 +11,9 @@ const snapshot = JSON.parse(await readFile(new URL('content/repositories.json', 
 const rawProjects = await Promise.all(catalog.projects.map(project => readFile(new URL(`content/projects/${project.slug}.json`, root), 'utf8').then(JSON.parse)));
 
 test('every recorded repository has an authored note with a pinned source revision', () => {
-  assert.equal(catalog.projects.length, 20);
+  assert.equal(catalog.projects.length, 21);
   assert.deepEqual(catalog.projects.map(project => project.slug).sort(), snapshot.repositories.map(repo => repo.name).sort());
-  assert.equal(catalog.projects.filter(project => project.kind === 'Implementation note').length, 18);
+  assert.equal(catalog.projects.filter(project => project.kind === 'Implementation note').length, 19);
   for (const project of catalog.projects.filter(project => project.slug !== 'site')) {
     assert.match(project.repository.sha, /^[a-f0-9]{40}$/);
     assert.ok(project.sources.some(source => source.url.includes(project.repository.sha)));
@@ -91,7 +91,7 @@ test('all citations and machine-readable exports contain the intended public URL
     assert.ok(bib.includes(project.title));
   }
   const sitemap = await readFile(new URL('dist/sitemap.xml', root), 'utf8');
-  assert.equal([...sitemap.matchAll(/<url>/g)].length, 21);
+  assert.equal([...sitemap.matchAll(/<url>/g)].length, 22);
   const exported = JSON.parse(await readFile(new URL('dist/catalog.json', root), 'utf8'));
   assert.equal(exported.projects.length, catalog.projects.length);
 });

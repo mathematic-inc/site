@@ -1,0 +1,51 @@
+{
+  "slug": "confset",
+  "order": 21,
+  "category": "tools",
+  "title": "Generate the configuration files tools already know",
+  "summary": "Keep shared settings in Pkl and generate native configuration files with ownership checks and watched updates.",
+  "kind": "Implementation note",
+  "rationale": "Documented motivation",
+  "tags": ["Rust", "CLI", "Pkl", "Configuration"],
+  "abstract": "A repository may configure its formatter in JSON, its Python linter in TOML, and its SQL linter in INI. Confset lets maintainers compute those settings in one Pkl entry point, then generates the files each tool discovers. Tools and editor extensions keep their ordinary commands. The generator tracks which files it owns and refuses to overwrite handwritten or externally edited configuration. [1]",
+  "problem": [
+    "Sharing a setting across tools requires more than sharing a file. Each tool has its own keys, supported formats, and filename precedence. A generator that emits valid JSON can still produce a file the intended tool never loads. Confset pairs Pkl values with native destinations such as .oxlintrc.json, rustfmt.toml, and knip.json. [1]",
+    "Persistent output also creates an ownership problem. A later generation must distinguish its own previous output from a file a maintainer has edited. Changing formats can leave an older configuration in place that shadows the replacement. Confset checks those cases before writing. [1]"
+  ],
+  "design": [
+    "Confset embeds the Rust Pkl evaluator, pklr, and a versioned package containing its schema, built-in producers, and rendering helpers. The matching package evaluates offline. Twenty producers describe supported formats, canonical filenames, and competing configurations. Pkl amendments and functions compute the final values; JSON, YAML, TOML, and INI renderers preserve representable data. A Pkl function can produce custom text and companion files. [1] [2]",
+    "The CLI selects an explicit configuration, an environment override, the nearest ancestor confset.pkl, or the operating system's user configuration file. Nested projects can select their own entry point, and an entry point can import or amend modules at any depth. Relative outputs belong to the selected project's directory. A root invocation does not recursively run independent child entry points. [1]",
+    "Generation compiles the complete output set and checks destinations before publishing. Project-local state records output paths and content hashes. A writer lock coordinates generation and cleanup; staged replacements and a journal support recovery after interruption. Unchanged files retain their timestamps. When a declaration disappears or changes format, Confset removes only obsolete outputs that still match their recorded content. [3]",
+    "Watch mode follows local inputs, handles atomic editor saves, and discards superseded compilation results. Invalid edits leave the previous outputs in place, and a later save can recover. Stopping the watcher leaves its last successful files available to tools. The optional managed gitignore block follows the published output set without changing the Git index. [1] [4]"
+  ],
+  "comparisons": [
+    {
+      "alternative": "The Pkl CLI's multiple-file output",
+      "constraint": "Pkl already evaluates configuration, supports output renderers, and can write a module's output.files mapping to a directory. Maintainers can use that mechanism to generate several files from shared computations. [5]",
+      "response": "Confset adds a catalog of native filenames and format restrictions, ownership checks, obsolete-output cleanup, and a watch command around an embedded evaluator. [1] [2] [3]",
+      "tradeoff": "The Pkl CLI offers a general generation interface. Confset adds project state and native-tool conventions to maintain; custom producers still require the author to choose the tool's correct destination and structure. [1]"
+    },
+    {
+      "alternative": "hk and other check runners",
+      "constraint": "hk uses Pkl to configure Git hooks and checks, including how commands run together. That workflow centers on executing checks. [6]",
+      "response": "Confset generates persistent configuration before those commands run. A hook runner, CI job, or editor can then invoke the native tool through its existing interface. [1]",
+      "tradeoff": "The tools compose, but generation is an additional workflow step. Run confset generate before CI checks, and keep the watcher running during edits when immediate regeneration is needed. Confset does not schedule or execute the checks themselves. [1]"
+    }
+  ],
+  "boundaries": [
+    "Configuration validation checks Confset's schema, representability, paths, and conflicts. The native tools remain responsible for validating their option names and meanings. JavaScript and TypeScript emitters and runtime callbacks are outside the supported model; Pkl computations finish before native files are loaded. [1]",
+    "Publication replaces each file atomically, but readers can observe a mixture of old and new files during an update across several destinations. Preserve the .confset state directory: matching bytes alone are not evidence that an existing file belongs to the generator. Cleanup preserves modified or ambiguous files and reports them for review. [1] [3]",
+    "The verification suite exercises native tool discovery and the actual Oxlint and Oxfmt language servers through an LSP client. Those protocol checks cover configuration reload behavior; they do not establish every editor extension's UI behavior. Release jobs build and run native archives on macOS, Windows, and GNU and musl Linux for amd64 and arm64, then test Cargo Binstall and mise installations. [7] [8]"
+  ],
+  "related": ["if-changed", "mcpr", "unfmt"],
+  "sources": [
+    { "label": "Confset: workflow, discovery, ownership, and configuration model", "path": "README.md" },
+    { "label": "Confset: native formats, filenames, and conflicting alternatives", "path": "pkl/catalog.json" },
+    { "label": "Confset: publication, ownership records, and recovery", "path": "src/publication.rs" },
+    { "label": "Confset: watched inputs and superseded compilations", "path": "src/watch.rs" },
+    { "label": "Pkl CLI: evaluation, renderers, and multiple-file output", "url": "https://pkl-lang.org/main/current/pkl-cli/index.html" },
+    { "label": "hk: Pkl-configured Git hooks and checks", "url": "https://hk.jdx.dev/" },
+    { "label": "Confset: verification scope and platform coverage", "path": "docs/verification.md" },
+    { "label": "Confset: release assets and installation verification", "path": "docs/releasing.md" }
+  ]
+}

@@ -9,7 +9,7 @@ test('index, category navigation, shareable filters, and browser history', async
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('/');
-  await expect(visibleRows(page)).toHaveCount(20);
+  await expect(visibleRows(page)).toHaveCount(21);
   await page.getByRole('button', { name: 'Agents 4', exact: true }).click();
   await expect(visibleRows(page)).toHaveCount(4);
   await expect(page).toHaveURL(/area=agents/);
@@ -33,9 +33,9 @@ test('full-text search finds alternative discussion and recovers from no results
   await expect(visibleRows(page)).toHaveCount(1);
   await page.getByRole('searchbox').fill('zzq-unmatched-271828');
   await expect(page.getByText('Try a different line of inquiry.')).toBeVisible();
-  await expect(page.locator('#result-count')).toHaveText('0 repositories / 20');
+  await expect(page.locator('#result-count')).toHaveText('0 repositories / 21');
   await page.getByRole('button', { name: /Clear search and filters/ }).click();
-  await expect(visibleRows(page)).toHaveCount(20);
+  await expect(visibleRows(page)).toHaveCount(21);
   await expect(page.getByRole('searchbox')).toBeFocused();
 });
 
@@ -69,7 +69,7 @@ test('footnotes, print control, and downloadable citation work', async ({ page }
 
 test('keyboard shortcut, invalid query state, and unknown pages have useful outcomes', async ({ page }) => {
   await page.goto('/?area=unknown');
-  await expect(visibleRows(page)).toHaveCount(20);
+  await expect(visibleRows(page)).toHaveCount(21);
   await page.keyboard.press('/');
   await expect(page.getByRole('searchbox')).toBeFocused();
   const response = await page.goto('/projects/unknown/');
@@ -81,7 +81,7 @@ test('all content and reference navigation remain available without JavaScript',
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
   await page.goto(`${process.env.SITE_TEST_URL ?? 'http://127.0.0.1:4183'}/`);
-  await expect(visibleRows(page)).toHaveCount(20);
+  await expect(visibleRows(page)).toHaveCount(21);
   await expect(page.getByRole('searchbox')).toBeHidden();
   await page.getByRole('heading', { name: 'earl', exact: true }).getByRole('link').click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('earl');
@@ -112,7 +112,7 @@ test('copy citation uses the clipboard and explains a denied clipboard permissio
 });
 
 test('index and representative paper layouts pass automated accessibility checks', async ({ page }) => {
-  for (const path of ['/', '/projects/earl/', '/projects/tauri-plugin-ui-inspector/', '/projects/bucket-cache-action/']) {
+  for (const path of ['/', '/projects/earl/', '/projects/tauri-plugin-ui-inspector/', '/projects/bucket-cache-action/', '/projects/confset/']) {
     await page.goto(path);
     await page.evaluate(() => document.fonts.ready);
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();

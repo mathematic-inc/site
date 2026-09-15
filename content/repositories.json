@@ -1,5 +1,5 @@
 {
-  "reviewed": "2026-09-12",
+  "reviewed": "2026-09-14",
   "organization": "mathematic-inc",
   "repositories": [
     {
@@ -133,6 +133,13 @@
       "sha": "714dccf2713411d847f1919303d78bbd5c342f32",
       "language": "TypeScript",
       "description": "S3 and GCS caching for GitHub Actions with configurable post-job saves and renewable workload identity credentials",
+      "license": "MIT"
+    },
+    {
+      "name": "confset",
+      "sha": "75e8f0462eaeb7754f37276ed10c1096eb937ddf",
+      "language": "Rust",
+      "description": "Generate native tool configuration from Pkl",
       "license": "MIT"
     },
     {
