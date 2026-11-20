@@ -119,7 +119,7 @@ The repository uses GitHub Pages with GitHub Actions as its publishing source.
 `.github/workflows/pages.yml` builds and verifies pushes and pull requests.
 Successful pushes to `main` deploy `dist/` through the `github-pages`
 environment. Pull requests run verification without deploying.
-`.github/workflows/check.yml` runs `hk check --all --slow` on every pull request
+`.github/workflows/ci.yml` runs `hk check --all --slow` on every pull request
 and push to `main`.
 
 The build deliberately targets `https://mathematic.io/`. Change `base` and
