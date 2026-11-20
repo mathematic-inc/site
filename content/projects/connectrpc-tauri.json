@@ -6,11 +6,7 @@
   "summary": "Carry Connect calls between the webview and Rust without running a loopback HTTP server.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Rust",
-    "TypeScript",
-    "Tauri"
-  ],
+  "tags": ["Rust", "TypeScript", "Tauri"],
   "abstract": "A Tauri frontend and its Rust backend already share an application boundary. connectrpc-tauri carries Connect protocol traffic across that boundary, reusing Connect's serialization and streaming machinery while removing the need to host a local HTTP listener. Unary and streaming calls take different transport paths. [1]",
   "problem": [
     "A desktop application can expose Rust services over loopback HTTP, but then it must manage a listener, address selection, and access to that listener. Replacing RPC with unrelated Tauri commands avoids the listener while making the application responsible for rebuilding its service contract and streaming behavior.",
@@ -38,11 +34,7 @@
     "The unary custom-scheme path bypasses Tauri command ACL dispatch. Do not assume granting or denying a command permission authorizes every unary RPC; enforce the application's service and caller policy at the appropriate boundary. [1]",
     "The repository reports macOS verification for the unary path and documents Android streaming's JSON-array fallback. Its published timing table describes one M-series Mac run, not a universal speed comparison. Evaluate your platform and payload sizes, and keep the distinction between protocol reuse and transport-specific behavior explicit."
   ],
-  "related": [
-    "connectrpc-sdk",
-    "tauri-plugin-ui-inspector",
-    "protovalidate-buffa"
-  ],
+  "related": ["connectrpc-sdk", "tauri-plugin-ui-inspector", "protovalidate-buffa"],
   "sources": [
     {
       "label": "ConnectRPC over Tauri: architecture, transport paths, benchmarks, and limitations",

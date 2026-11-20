@@ -6,11 +6,7 @@
   "summary": "Host Mozilla PDF.js in a VS Code custom editor with an explicit document and webview lifecycle.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "TypeScript",
-    "VS Code",
-    "PDF.js"
-  ],
+  "tags": ["TypeScript", "VS Code", "PDF.js"],
   "abstract": "A generated PDF is often part of the same workspace as the source that produced it. vscode-pdf integrates Mozilla PDF.js into VS Code as a read-only custom editor. The project keeps the integration focused on viewing, with the renderer and the editor adapter carrying separate responsibilities. [1][2]",
   "problem": [
     "Opening a PDF in a separate viewer breaks the editor's tab-level context. Embedding a renderer solves that workflow problem, but introduces integration work: resource URLs, document lifetime, webview configuration, and cleanup when a document closes.",
@@ -38,10 +34,7 @@
     "The documented current viewer requires VS Code 1.95 or later. PDF.js compatibility and security maintenance remain ongoing dependencies, so use the renderer bundled with the extension version being evaluated. [1]",
     "This note does not certify the viewer as leak-free or faster than another extension. Repeated open/close behavior and document refresh need workload-specific testing. PDF content editing and TeX compilation fall outside the documented purpose."
   ],
-  "related": [
-    "vscode-latex",
-    "vscode-api-linter"
-  ],
+  "related": ["vscode-latex", "vscode-api-linter"],
   "sources": [
     {
       "label": "vscode-pdf: purpose, installation, and requirements",

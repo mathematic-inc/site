@@ -6,11 +6,7 @@
   "summary": "Require dependent files or named regions to change together when a diff touches an annotated block.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Rust",
-    "CLI",
-    "CI"
-  ],
+  "tags": ["Rust", "CLI", "CI"],
   "abstract": "Some relationships between files are too small to justify a generator, yet too easy to forget during an edit. if-changed lets maintainers declare those relationships beside the code. It checks a diff and fails when a changed region's declared counterpart has not also changed. [1]",
   "problem": [
     "The motivating example is an error-code enum represented in both Rust and TypeScript. Editing one definition without the other introduces drift. A shared schema and generator can eliminate that duplication, but installing a generation pipeline for a small, isolated pair of definitions can cost more than it saves. [1]",
@@ -38,11 +34,7 @@
     "A meaningless change to the dependent block can satisfy the diff requirement. Keep semantic tests for contracts that must agree, and prefer generation when one representation can be derived reliably from another. [1]",
     "Pick comparison revisions deliberately in CI. Annotations only help if the command sees the relevant changes, and suppressions deserve review because they bypass a declared dependency. Use named blocks when a whole-file change would be too weak a signal."
   ],
-  "related": [
-    "sqlc-gen-sqlx",
-    "connectrpc-sdk",
-    "unfmt"
-  ],
+  "related": ["sqlc-gen-sqlx", "connectrpc-sdk", "unfmt"],
   "sources": [
     {
       "label": "if-changed: motivating example, annotations, diff selection, and suppression",

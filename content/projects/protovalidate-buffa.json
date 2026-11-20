@@ -6,11 +6,7 @@
   "summary": "Turn buf.validate annotations and CEL rules into Rust validators for owned messages and borrowed views.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Rust",
-    "Protobuf",
-    "Code generation"
-  ],
+  "tags": ["Rust", "Protobuf", "Code generation"],
   "abstract": "A protobuf validation rule is only useful if it can run against the application's actual message types. protovalidate-buffa compiles buf.validate annotations into Validate implementations for Buffa's owned and borrowed representations. CEL rules become native Rust during generation, keeping a CEL interpreter out of the validation path. [1]",
   "problem": [
     "The repository documents an original compatibility gap: the Rust validators considered at its creation targeted Prost, while Buffa uses a different generated representation with borrowed views. Converting each request to a separate model solely to validate it undermines the reason for using that representation. [1]",
@@ -44,11 +40,7 @@
     "The original motivation is historical context. Current prost-protovalidate-build supports Buffa and static standard-rule validation. For schemas that use CEL, compare native transpilation here against the alternative's documented runtime-bridge path. [1][3]",
     "The cited repository targets Buffa 0.9.1 and ConnectRPC 0.9. Keep message generation and validator generation in step, including field-naming options. Passing a finite conformance suite is evidence of behavior for those cases; it is not a proof for all future schema revisions."
   ],
-  "related": [
-    "connectrpc-tauri",
-    "connectrpc-sdk",
-    "vscode-api-linter"
-  ],
+  "related": ["connectrpc-tauri", "connectrpc-sdk", "vscode-api-linter"],
   "sources": [
     {
       "label": "protovalidate-buffa: motivation, generated validation, compatibility, and reported conformance",

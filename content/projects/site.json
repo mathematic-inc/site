@@ -6,11 +6,7 @@
   "summary": "A static, source-backed index of Mathematic's public repositories and the decisions behind them.",
   "kind": "Repository record",
   "rationale": "Documented motivation",
-  "tags": [
-    "HTML",
-    "CSS",
-    "JavaScript"
-  ],
+  "tags": ["HTML", "CSS", "JavaScript"],
   "abstract": "A repository list shows what an organization has published, but rarely explains how the projects relate or when one is worth adopting. This site collects those explanations in a consistent reading format. Each project note states a problem, describes the mechanism, compares relevant alternatives, and records the boundary of its claims.",
   "problem": [
     "GitHub organizes each repository around its own code and README. A reader comparing projects must first find the repositories, then reconstruct their purposes and alternatives from documents written at different times. A short organization description cannot carry that analysis for every project.",
@@ -38,10 +34,7 @@
     "These are engineering notes, not peer-reviewed papers. The visual format supports careful reading; it does not imply external academic endorsement. Documented historical motivations and engineering interpretations are labelled separately.",
     "A named alternative is compared for a particular requirement, not ranked as universally better or worse. Numerical results are attributed to their source and context. Claims should change when the evidence changes."
   ],
-  "related": [
-    "noop",
-    "if-changed"
-  ],
+  "related": ["noop", "if-changed"],
   "sources": [
     {
       "label": "This site: source, maintenance, and verification",

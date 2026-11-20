@@ -6,11 +6,7 @@
   "summary": "Keep highlighting, formatting, linting, and snippets available without taking ownership of the build.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "TypeScript",
-    "VS Code",
-    "LaTeX"
-  ],
+  "tags": ["TypeScript", "VS Code", "LaTeX"],
   "abstract": "Some LaTeX users already have a build system and a preferred viewer. They need source-editing support in VS Code without adopting another build orchestration workflow. vscode-latex documents that narrower purpose and integrates established formatters and ChkTeX with the editor. [1]",
   "problem": [
     "An integrated LaTeX environment often combines editing, compilation, preview, and document navigation. That is useful when the extension owns the document workflow. A developer who already runs a build through another system may instead want the usual source-editor services to coexist with that system. [1]",
@@ -38,10 +34,7 @@
     "Install a supported formatter and ChkTeX, or use the extension's documented installation assistance. Native tool configuration can override editor defaults, so diagnose the discovered configuration before changing an editor setting. [1]",
     "This project does not compile or preview a TeX document. Pair it with an existing build and viewer workflow. That scope is the reason to choose it; it is not evidence that integrated LaTeX environments are defective."
   ],
-  "related": [
-    "vscode-pdf",
-    "vscode-api-linter"
-  ],
+  "related": ["vscode-pdf", "vscode-api-linter"],
   "sources": [
     {
       "label": "vscode-latex: purpose, tools, configuration, and scope",

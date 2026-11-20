@@ -6,11 +6,7 @@
   "summary": "Restore from S3 or GCS, renew workload credentials, and decide whether to save using the job's final state.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "TypeScript",
-    "GitHub Actions",
-    "S3 / GCS"
-  ],
+  "tags": ["TypeScript", "GitHub Actions", "S3 / GCS"],
   "abstract": "A build cache spans two moments: restore near the start of a job and save during cleanup. bucket-cache-action makes storage, credentials, and that final save decision explicit. It supports S3 and native Google Cloud Storage, including workload-identity renewal in each phase, while keeping the bucket's access and retention policies under the operator's control. [1]",
   "problem": [
     "A job can restore dependencies with one cloud role, switch to a deployment role, and reach cleanup after the original credentials have expired or been removed. A cache implementation that relies only on the environment left behind at save time then depends on unrelated actions and their cleanup order. [1]",
@@ -45,10 +41,7 @@
     "An archive digest detects corruption, not a malicious authorized writer. Anyone who can populate a cache may influence executable dependencies read by a later job. Separate untrusted pull-request writers from trusted build or deployment caches through bucket and identity policy. [1]",
     "Buckets must already exist. Configure retention and abandoned-upload cleanup, and account for transfer cost and storage location. The action's cache format differs from RunsOn's, so a migration starts cold. Transfer timeouts do not cover local archive creation or extraction. The repository's emulator and workflow tests are described in its documentation; this catalog does not claim an independent cloud benchmark. [1]"
   ],
-  "related": [
-    "if-changed",
-    "smapped-traces"
-  ],
+  "related": ["if-changed", "smapped-traces"],
   "sources": [
     {
       "label": "Bucket cache: lifecycle, identity, storage, trust model, and origin",

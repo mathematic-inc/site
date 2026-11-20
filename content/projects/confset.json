@@ -39,13 +39,31 @@
   ],
   "related": ["if-changed", "mcpr", "unfmt"],
   "sources": [
-    { "label": "Confset: workflow, discovery, ownership, and configuration model", "path": "README.md" },
-    { "label": "Confset: native formats, filenames, and conflicting alternatives", "path": "pkl/catalog.json" },
-    { "label": "Confset: publication, ownership records, and recovery", "path": "src/publication.rs" },
+    {
+      "label": "Confset: workflow, discovery, ownership, and configuration model",
+      "path": "README.md"
+    },
+    {
+      "label": "Confset: native formats, filenames, and conflicting alternatives",
+      "path": "pkl/catalog.json"
+    },
+    {
+      "label": "Confset: publication, ownership records, and recovery",
+      "path": "src/publication.rs"
+    },
     { "label": "Confset: watched inputs and superseded compilations", "path": "src/watch.rs" },
-    { "label": "Pkl CLI: evaluation, renderers, and multiple-file output", "url": "https://pkl-lang.org/main/current/pkl-cli/index.html" },
+    {
+      "label": "Pkl CLI: evaluation, renderers, and multiple-file output",
+      "url": "https://pkl-lang.org/main/current/pkl-cli/index.html"
+    },
     { "label": "hk: Pkl-configured Git hooks and checks", "url": "https://hk.jdx.dev/" },
-    { "label": "Confset: verification scope and platform coverage", "path": "docs/verification.md" },
-    { "label": "Confset: release assets and installation verification", "path": "docs/releasing.md" }
+    {
+      "label": "Confset: verification scope and platform coverage",
+      "path": "docs/verification.md"
+    },
+    {
+      "label": "Confset: release assets and installation verification",
+      "path": "docs/releasing.md"
+    }
   ]
 }

@@ -6,11 +6,7 @@
   "summary": "Run Google's API Linter on protobuf files and turn AIP violations into VS Code diagnostics.",
   "kind": "Implementation note",
   "rationale": "Engineering rationale",
-  "tags": [
-    "TypeScript",
-    "VS Code",
-    "Protobuf"
-  ],
+  "tags": ["TypeScript", "VS Code", "Protobuf"],
   "abstract": "A protobuf file can compile while violating an API design convention. Google's API Linter checks Google API Improvement Proposals; vscode-api-linter brings those checks into the editing loop. The extension adapts the linter's output to inline diagnostics rather than defining a second set of API rules. [1][2]",
   "problem": [
     "API design constraints extend beyond protobuf syntax. Teams following AIPs need feedback on the shape and conventions of their APIs, and a failure found only in CI arrives after the author has moved away from the edit. The useful intervention is to run the same rule engine near the source change. [2]",
@@ -38,11 +34,7 @@
     "The extension requires api-linter or a working custom command. Its save-triggered workflow should not be described as a complete check of every unsaved keystroke. Match import paths and configuration to CI to avoid contradictory diagnostics. [1]",
     "Use it when AIPs are an intentional API policy. A team using different conventions should choose rules that fit its contract rather than treating Google's style as a universal requirement."
   ],
-  "related": [
-    "protovalidate-buffa",
-    "connectrpc-sdk",
-    "vscode-latex"
-  ],
+  "related": ["protovalidate-buffa", "connectrpc-sdk", "vscode-latex"],
   "sources": [
     {
       "label": "VS Code API Linter: triggers, diagnostics, and configuration",

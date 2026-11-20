@@ -6,11 +6,7 @@
   "summary": "Generate typed event methods from a schema and dispatch them through interchangeable provider plugins.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "TypeScript",
-    "Analytics",
-    "Code generation"
-  ],
+  "tags": ["TypeScript", "Analytics", "Code generation"],
   "abstract": "An application event should retain its meaning when the team changes analytics providers. alyt separates the event contract from provider-specific calls. A YAML schema can generate typed tracking methods, while plugins send those calls to the analytics services selected by the application. [1]",
   "problem": [
     "Calling provider SDKs throughout an application distributes vendor choices across product code. A migration then touches each call site. Event names and property names also become an informal contract: a misspelled event can silently create a second series instead of failing the build.",
@@ -38,10 +34,7 @@
     "Removing a plugin changes future dispatch through alyt; it is not a complete consent or data-deletion system for an independently loaded vendor SDK. Provider capabilities also differ, so the same call does not imply identical downstream semantics. [1]",
     "Unsalted SHA-256 hashing is deterministic and is not a claim of anonymization. The documented implementation does not trim, lowercase, or salt inputs. Treat that option as a defined transformation, and decide whether it satisfies the application's data policy. [1]"
   ],
-  "related": [
-    "smapped-traces",
-    "connectrpc-sdk"
-  ],
+  "related": ["smapped-traces", "connectrpc-sdk"],
   "sources": [
     {
       "label": "alyt: event generation, dispatch, plugins, hashing, and lifecycle",

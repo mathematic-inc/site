@@ -1,0 +1,4 @@
+amends ".hk/org.pkl"
+
+// The SIL Open Font License text is vendored unchanged.
+exclude = super.exclude + List("public/fonts/OFL.txt")

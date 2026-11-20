@@ -6,11 +6,7 @@
   "summary": "Generate a consistent client vocabulary without reimplementing the Connect runtime.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "TypeScript",
-    "Rust",
-    "ConnectRPC"
-  ],
+  "tags": ["TypeScript", "Rust", "ConnectRPC"],
   "abstract": "RPC names need enough context to stand on their own. The same names become repetitive when a client already groups them by resource. connectrpc-sdk generates a naming layer over existing Connect clients, turning service-shaped calls into a resource-oriented SDK while retaining the underlying protocol implementation. [1]",
   "problem": [
     "A schema might expose WorkspaceService.CreateWorkspace. Repeating both nouns in a client call gives the caller workspaceService.createWorkspace(request). The repository's motivating example instead exposes workspaces.create(request): the namespace carries the resource and the method carries the action. [1]",
@@ -38,11 +34,7 @@
     "English pluralization and naming conventions are assumptions, so inspect the generated public API and annotate exceptions. A stable protobuf service does not automatically imply a stable derived SDK name after a naming-rule change. [1]",
     "The Rust facade returns the response message for unary calls; callers that need transport headers or trailers can use the underlying generated client. Keep the generator compatible with the Connect and message generators documented for the target language."
   ],
-  "related": [
-    "connectrpc-tauri",
-    "protovalidate-buffa",
-    "ts-japi"
-  ],
+  "related": ["connectrpc-tauri", "protovalidate-buffa", "ts-japi"],
   "sources": [
     {
       "label": "Connect SDK: motivating example, derivation, collision rules, and target APIs",

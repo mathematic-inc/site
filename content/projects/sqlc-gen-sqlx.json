@@ -6,11 +6,7 @@
   "summary": "Generate SQLx query functions, row types, and parameter types from sqlc's analysis of PostgreSQL.",
   "kind": "Implementation note",
   "rationale": "Engineering rationale",
-  "tags": [
-    "Rust",
-    "PostgreSQL",
-    "Code generation"
-  ],
+  "tags": ["Rust", "PostgreSQL", "Code generation"],
   "abstract": "Teams that keep reviewed SQL in dedicated files still need Rust types and callable query functions. sqlc-gen-sqlx connects sqlc's SQL analysis to SQLx execution. It generates ordinary Rust functions and row structures so the query text and the corresponding application API can be regenerated together. [1]",
   "problem": [
     "Writing a query function by hand duplicates information that already exists in the SQL: parameter order, selected columns, nullability, and the intended result cardinality. A schema or query change can leave the handwritten wrapper behind. The useful automation is to derive that wrapper from the analyzed query.",
@@ -38,10 +34,7 @@
     "The documented target is PostgreSQL. Do not assume the plugin generates MySQL or SQLite code because SQLx supports those databases. Consumers also need the SQLx features and companion crates required by their generated types. [1]",
     "Keep migrations, the schema supplied to sqlc, and the deployed database in agreement. Generation does not perform migrations or prove production schema compatibility. Validate representative generated queries against the database, especially after changing nullability, custom types, or type overrides."
   ],
-  "related": [
-    "protovalidate-buffa",
-    "connectrpc-sdk"
-  ],
+  "related": ["protovalidate-buffa", "connectrpc-sdk"],
   "sources": [
     {
       "label": "sqlc-gen-sqlx: generated API, types, annotations, and overrides",

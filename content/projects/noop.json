@@ -6,10 +6,7 @@
   "summary": "A no-operation repository with development configuration and no application implementation.",
   "kind": "Repository record",
   "rationale": "Scope record",
-  "tags": [
-    "Pkl",
-    "Repository"
-  ],
+  "tags": ["Pkl", "Repository"],
   "abstract": "noop is an intentionally minimal entry in the organization. Its public description calls it a no-operation repository, and its README contains only the name. The reviewed tree includes development configuration and contribution machinery, but no application or library implementation. [1][2]",
   "problem": [
     "A catalog can make an empty or administrative repository look like a product if every entry receives the same feature template. This record keeps the distinction explicit. The source does not document a user problem, adoption workflow, or substantive design motivation for noop. [2]",
@@ -31,10 +28,7 @@
     "The project name does not imply a no-op package for a particular language, a reusable template, or a test fixture. Those roles would need documentation or code before this note could describe them.",
     "If the repository acquires an implementation, its scope record should be replaced with an explanation grounded in that implementation."
   ],
-  "related": [
-    "site",
-    "bucket-cache-action"
-  ],
+  "related": ["site", "bucket-cache-action"],
   "sources": [
     {
       "label": "noop: public description",
