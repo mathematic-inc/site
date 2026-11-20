@@ -6,10 +6,7 @@
   "summary": "Describe resources and relationships in TypeScript without tying the response format to a web framework.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "TypeScript",
-    "JSON:API"
-  ],
+  "tags": ["TypeScript", "JSON:API"],
   "abstract": "JSON:API requires more than a JSON-shaped response. Resource identity, relationship linkage, included resources, and links have distinct meanings. ts-japi represents these concerns with composable TypeScript serializers so an API can share document construction across handlers and data sources. Its published package has no runtime dependencies. [1][2]",
   "problem": [
     "A controller that constructs a response by hand has to preserve the same rules every time it includes another resource. JSON:API compound documents require linkage to primary data and restrict duplicate resource objects. A nested JavaScript object and a valid compound document are not interchangeable. [3]",
@@ -37,10 +34,7 @@
     "Deep relationship traversal can multiply database work. Set inclusion rules deliberately and arrange batching or caching in the data layer where needed. A serializer is not an ORM or a query optimizer. [1]",
     "The default declared JSON:API version is 1.0. Do not infer complete support for every JSON:API 1.1 extension from the project name. Use the options and behavior of the pinned implementation, and test the contract your API promises. This note makes no exclusivity claim about TypeScript or recursive inclusion."
   ],
-  "related": [
-    "connectrpc-sdk",
-    "vscode-api-linter"
-  ],
+  "related": ["connectrpc-sdk", "vscode-api-linter"],
   "sources": [
     {
       "label": "ts-japi: serialization, composition, includes, and scope",

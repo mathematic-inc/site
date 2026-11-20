@@ -6,11 +6,7 @@
   "summary": "Resolve minified exception stacks using build artifacts and debug IDs before exporting traces.",
   "kind": "Implementation note",
   "rationale": "Engineering rationale",
-  "tags": [
-    "TypeScript",
-    "OpenTelemetry",
-    "Source maps"
-  ],
+  "tags": ["TypeScript", "OpenTelemetry", "Source maps"],
   "abstract": "A minified stack trace identifies deployed JavaScript, not necessarily the source a developer needs to edit. smapped-traces adds source-map resolution to an OpenTelemetry pipeline. It connects build-time map collection, client-side debug IDs, and server-side resolution before forwarding the trace to a collector. [1]",
   "problem": [
     "A browser exception may report a line and column in a compressed bundle. Keeping that string in telemetry preserves what the browser emitted, but does not reconstruct the original module location. The resolver needs the map corresponding to the exact deployed artifact.",
@@ -38,10 +34,7 @@
     "The map must exist and match the debug ID. Instrumentation cannot recover original source that was never collected or retained. Plan artifact retention around the releases that can still emit telemetry, and verify the build actually injects a supported debug-ID mapping. [1]",
     "The documented Next.js integration requires Next.js 16+, and the core targets OpenTelemetry SDK v2+. Treat map storage and any ingestion endpoint as application infrastructure with deliberate access controls. This library supplies resolution, not an entire observability backend."
   ],
-  "related": [
-    "alyt",
-    "bucket-cache-action"
-  ],
+  "related": ["alyt", "bucket-cache-action"],
   "sources": [
     {
       "label": "smapped-traces: pipeline, packages, stores, debug IDs, and requirements",

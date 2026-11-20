@@ -6,11 +6,7 @@
   "summary": "Give an agent named operations while keeping request templates and credentials under operator control.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Rust",
-    "CLI",
-    "MCP"
-  ],
+  "tags": ["Rust", "CLI", "MCP"],
   "abstract": "An agent that can assemble arbitrary authenticated requests can also assemble requests its operator never intended. Earl separates the operation definition from the arguments an agent supplies. Versioned HCL templates describe the request; Earl resolves secrets when it executes that request. The useful boundary is the set of permitted operations and parameters. [1]",
   "problem": [
     "Consider an agent that needs to search issues in one repository. Giving it a general HTTP tool and a token requires another layer to constrain the destination, method, and credential use. Instructions alone do not impose those constraints on the executable request. Earl's documented motivation is to move that definition into reviewed templates. [1][2]",
@@ -38,10 +34,7 @@
     "Earl does not make an agent immune to prompt injection. Untrusted responses can still influence the agent's next call. Templates with broad parameters, write access to template files, or access to other unrestricted tools can defeat the intended boundary. Apply host permissions and review template changes as executable policy. [2]",
     "Use it when the operation set is stable enough to review and constrain. Evaluate the actual protocols, credential backends, and policies you deploy; this note does not claim a universal security guarantee or an independent security audit."
   ],
-  "related": [
-    "claude-tools-mcp",
-    "mcpr"
-  ],
+  "related": ["claude-tools-mcp", "mcpr"],
   "sources": [
     {
       "label": "Earl: purpose, template execution, and quick start",

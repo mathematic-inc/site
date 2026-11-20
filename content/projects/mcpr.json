@@ -6,11 +6,7 @@
   "summary": "Maintain MCP server definitions once and translate them into each editor's native configuration.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Go",
-    "CLI",
-    "MCP"
-  ],
+  "tags": ["Go", "CLI", "MCP"],
   "abstract": "MCP standardizes communication with tools, but applications still store server configuration in different places and formats. MCPR keeps a central set of server definitions and writes the corresponding configuration for selected clients. Its purpose is to make a change to a command, endpoint, or argument a single maintenance operation. [1]",
   "problem": [
     "A developer using several AI editors can end up maintaining several copies of the same server command and environment. Updating one copy leaves another editor running an older command or endpoint. Project settings add a second dimension: a server may belong to one checkout rather than every editor session on the machine. [1]",
@@ -38,10 +34,7 @@
     "MCPR distributes configuration; it does not operate the servers or prove they are trustworthy. Its documented configuration includes environment and header values, so treat the registry and generated client files according to the sensitivity of those values. [1]",
     "Check the supported-client table and the generated settings when adopting a new editor version. Configuration schemas and transport support evolve independently. Keep client-specific settings under the ownership of the native application when they do not belong to the shared registry."
   ],
-  "related": [
-    "earl",
-    "claude-tools-mcp"
-  ],
+  "related": ["earl", "claude-tools-mcp"],
   "sources": [
     {
       "label": "MCPR: registry, adapters, sync, and client support",

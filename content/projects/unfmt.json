@@ -6,11 +6,7 @@
   "summary": "Compile literal-and-capture patterns into Rust code without compiling a pattern at runtime.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Rust",
-    "Parsing",
-    "Macros"
-  ],
+  "tags": ["Rust", "Parsing", "Macros"],
   "abstract": "Many parsing jobs consist of fixed text with a few variable fields: the shape of a format string in reverse. unfmt provides that narrower pattern language as a compile-time macro. It is useful when a general regular expression carries more syntax and runtime setup than the input format requires. [1]",
   "problem": [
     "A parser for a predictable log line often needs to verify a delimiter and return the text between two literals. Repeated splitting distributes the format across several operations. A regular expression centralizes the shape, but its pattern still needs compilation when the program runs unless another mechanism has already done that work. [2]",
@@ -38,10 +34,7 @@
     "Use explicit whole-input matching when trailing or leading input must be rejected. Choose patterns with unambiguous delimiters, and test failures as well as successful examples. The absence of backtracking is a semantic restriction, not a claim that every possible parsing workload becomes faster. [1]",
     "Patterns known only at runtime need a different tool. Recursive or context-sensitive input belongs in a parser designed for that grammar. This note claims elimination of runtime pattern compilation, not elimination of runtime parsing work."
   ],
-  "related": [
-    "addr-spec-rs",
-    "if-changed"
-  ],
+  "related": ["addr-spec-rs", "if-changed"],
   "sources": [
     {
       "label": "unfmt: captures, typed conversion, whole-input matching, and restrictions",

@@ -6,11 +6,7 @@
   "summary": "Capture native pixels, DOM semantics, and optional source metadata in a reference a coding agent can resolve.",
   "kind": "Implementation note",
   "rationale": "Documented motivation",
-  "tags": [
-    "Rust",
-    "TypeScript",
-    "Tauri"
-  ],
+  "tags": ["Rust", "TypeScript", "Tauri"],
   "abstract": "A screenshot tells a coding agent what an interface looks like, but it does not identify the element's role, locator, or source file. tauri-plugin-ui-inspector packages that context with an actual native-window capture and gives the selection a durable reference. The reference can be inspected later and checked against the running interface. [1]",
   "problem": [
     "An instruction such as 'fix this button' loses precision when a page has several similar buttons. A coordinate can move after a resize. A CSS selector can match a different node after a render. An image alone requires the agent to infer both the element's identity and the code that produced it.",
@@ -38,10 +34,7 @@
     "Source locations depend on development metadata and may be absent in production. Closed shadow roots remain opaque. Native capture can fail because of screen-recording permissions, protected windows, or compositor restrictions; the repository documents different levels of platform verification. [1]",
     "Text and attribute redaction do not erase a secret already painted into screenshot pixels. Treat stored captures as sensitive. The reference is an aid to inspection and source navigation, not a replacement for an application's behavior tests."
   ],
-  "related": [
-    "connectrpc-tauri",
-    "connectrpc-sdk"
-  ],
+  "related": ["connectrpc-tauri", "connectrpc-sdk"],
   "sources": [
     {
       "label": "UI inspector: reference model, capture, resolution, and platform support",
