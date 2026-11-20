@@ -16,7 +16,8 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
-    "@playwright/test": "1.65.0"
+    "@playwright/test": "1.65.0",
+    "@types/node": "26.6.6"
   },
   "engines": {
     "node": ">=26.8.2"
