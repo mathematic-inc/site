@@ -15,10 +15,12 @@ runtime scripts.
 
 ## Development
 
-Use Node.js 26.8.2 or later. Install development dependencies, build the
-publication, and start the preview server:
+Use Node.js 26.8.2 or later. `mise install` installs the pinned tools, which
+include Node.js. Install development dependencies, build the publication, and
+start the preview server:
 
 ```sh
+mise install
 npm ci
 npm run build
 npm run preview
@@ -48,6 +50,12 @@ citations, internal links, article rendering, full-text search, filter history,
 no-results recovery, clipboard success and failure, no-JavaScript use,
 search-index failure, 404s, print behavior, and automated WCAG accessibility
 checks. Automated accessibility checks do not replace manual inspection.
+
+`mise run lint` checks the formatting, the lint rules and the ToolConfig files
+with [hk](https://hk.jdx.dev/). `mise run fix` fixes what hk can fix. The
+settings of every tool come from the organization policy in
+[toolconfig-config](https://github.com/mathematic-inc/toolconfig-config).
+`mise run generate` writes them to this checkout.
 
 Set `PLAYWRIGHT_BROWSERS_PATH` and `TMPDIR` to an approved external volume when
 your local development policy requires it. To run browser checks against the
@@ -111,6 +119,8 @@ The repository uses GitHub Pages with GitHub Actions as its publishing source.
 `.github/workflows/pages.yml` builds and verifies pushes and pull requests.
 Successful pushes to `main` deploy `dist/` through the `github-pages`
 environment. Pull requests run verification without deploying.
+`.github/workflows/check.yml` runs `hk check --all --slow` on every pull request
+and push to `main`.
 
 The build deliberately targets `https://mathematic.io/`. Change `base` and
 `origin` in `src/render.mjs`, the URL assertions in the tests together if the
