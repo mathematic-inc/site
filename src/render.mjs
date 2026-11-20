@@ -1,14 +1,20 @@
 import { categories, textForSearch } from "./catalog.mjs";
 
+/** @import { Catalog, Project } from "./catalog.mjs" */
+
 export const base = "/";
 export const origin = "https://mathematic.io";
+/** @param {string} value */
 export const escape = (value) =>
-  String(value).replace(
-    /[&<>"']/g,
+  value.replaceAll(
+    /[&<>"']/gv,
     (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char],
   );
+/** @param {string} slug */
 export const projectPath = (slug) => `${base}projects/${slug}/`;
+/** @param {number} value */
 export const number = (value) => String(value).padStart(2, "0");
+/** @param {string} date */
 export const dateLabel = (date) =>
   new Intl.DateTimeFormat("en", {
     day: "numeric",
@@ -17,18 +23,36 @@ export const dateLabel = (date) =>
     timeZone: "UTC",
   }).format(new Date(`${date}T12:00:00Z`));
 
+/**
+ * @param {string} value
+ * @param {Project} project
+ */
 function prose(value, project) {
-  return escape(value).replace(
-    /\[(\d+)\]/g,
+  return escape(value).replaceAll(
+    /\[(\d+)\]/gv,
     (_, index) =>
       `<sup class="citation"><a href="#ref-${index}" aria-label="Reference ${index}: ${escape(project.sources[Number(index) - 1].label)}">[${index}]</a></sup>`,
   );
 }
 
+/**
+ * @param {readonly string[]} values
+ * @param {Project} project
+ */
 function paragraphs(values, project) {
   return values.map((value) => `<p>${prose(value, project)}</p>`).join("\n");
 }
 
+/**
+ * @param {Readonly<{
+ *   title: string,
+ *   description: string,
+ *   path: string,
+ *   body: string,
+ *   reviewed: string,
+ *   article?: boolean,
+ * }>} page
+ */
 function shell({ title, description, path, body, reviewed, article = false }) {
   return `<!doctype html>
 <html lang="en">
@@ -70,6 +94,7 @@ function shell({ title, description, path, body, reviewed, article = false }) {
 </html>`;
 }
 
+/** @param {Project} project */
 function row(project) {
   return `<article class="repository-row" data-repository="${project.slug}" data-category="${project.category}">
     <span class="row-number" aria-hidden="true">${number(project.order)}</span>
@@ -78,6 +103,7 @@ function row(project) {
   </article>`;
 }
 
+/** @param {Catalog} catalog */
 export function renderIndex(catalog) {
   const { projects, reviewed } = catalog;
   const notes = projects.filter((project) => project.kind === "Implementation note").length;
@@ -130,10 +156,18 @@ export function renderIndex(catalog) {
   });
 }
 
+/**
+ * @param {Project} project
+ * @param {string} reviewed
+ */
 export function citationText(project, reviewed) {
   return `Mathematic Inc. (${reviewed}). ${project.slug}: ${project.title}. Mathematic research notes, ${number(project.order)}. ${origin}${projectPath(project.slug)}`;
 }
 
+/**
+ * @param {Project} project
+ * @param {Catalog} catalog
+ */
 export function renderProject(project, catalog) {
   const { reviewed } = catalog;
   const readingMinutes = Math.max(
@@ -145,7 +179,7 @@ export function renderProject(project, catalog) {
         project.design,
         project.comparisons,
         project.boundaries,
-      ]).split(/\s+/).length / 220,
+      ]).split(/\s+/v).length / 220,
     ),
   );
   const body = `<main id="main" class="wrapper paper">
@@ -160,7 +194,7 @@ export function renderProject(project, catalog) {
         <section id="design"><h2><span class="section-index">2.</span> The design</h2>${paragraphs(project.design, project)}</section>
         <section id="comparisons"><h2><span class="section-index">3.</span> Alternatives</h2><p class="comparison-intro">The relevant distinction is the requirement each approach serves.</p>${project.comparisons.map((comparison, index) => `<section class="comparison"><h3><span>3.${index + 1}</span> ${escape(comparison.alternative)}</h3><dl><div><dt>The constraint</dt><dd>${prose(comparison.constraint, project)}</dd></div><div><dt>Our approach</dt><dd>${prose(comparison.response, project)}</dd></div><div><dt>The tradeoff</dt><dd>${prose(comparison.tradeoff, project)}</dd></div></dl></section>`).join("")}</section>
         <section id="boundaries"><h2><span class="section-index">4.</span> Boundaries & adoption</h2>${paragraphs(project.boundaries, project)}</section>
-        <section id="references" class="references"><h2><span class="section-index">5.</span> References</h2><p class="references-note">Sources reviewed ${dateLabel(reviewed)}. Mathematic source links retain the reviewed revision${project.slug === "site" ? "; this publication links to its current source" : ""}.</p><ol>${project.sources.map((source, index) => `<li id="ref-${index + 1}" tabindex="-1"><span class="reference-number">[${index + 1}]</span><div><a href="${escape(source.url)}">${escape(source.label)} <span aria-hidden="true">↗</span></a><span class="reference-origin">${source.path || source.tree ? `Mathematic Inc. · ${project.repository.sha === "main" ? "living edition" : project.repository.sha.slice(0, 8)}` : escape(new URL(source.url).hostname)}</span></div></li>`).join("")}</ol></section>
+        <section id="references" class="references"><h2><span class="section-index">5.</span> References</h2><p class="references-note">Sources reviewed ${dateLabel(reviewed)}. Mathematic source links retain the reviewed revision${project.slug === "site" ? "; this publication links to its current source" : ""}.</p><ol>${project.sources.map((source, index) => `<li id="ref-${index + 1}" tabindex="-1"><span class="reference-number">[${index + 1}]</span><div><a href="${escape(source.url)}">${escape(source.label)} <span aria-hidden="true">↗</span></a><span class="reference-origin">${(source.path ?? "") !== "" || source.tree === true ? `Mathematic Inc. · ${project.repository.sha === "main" ? "living edition" : project.repository.sha.slice(0, 8)}` : escape(new URL(source.url).hostname)}</span></div></li>`).join("")}</ol></section>
         <aside class="cite-note" aria-label="Citation"><span class="section-label">Cite this note</span><p>${escape(citationText(project, reviewed))}</p><a href="${projectPath(project.slug)}cite.bib" download>Download BibTeX <span aria-hidden="true">↓</span></a></aside>
         <nav class="related-notes" aria-label="Related research notes"><span class="section-label">Continue reading</span>${project.related
           .map((slug) => {
@@ -181,6 +215,7 @@ export function renderProject(project, catalog) {
   });
 }
 
+/** @param {string} reviewed */
 export function renderNotFound(reviewed) {
   return shell({
     title: "Page not found",
@@ -191,6 +226,11 @@ export function renderNotFound(reviewed) {
   });
 }
 
+/**
+ * @typedef {Readonly<{ slug: string, category: string, text: string }>} SearchEntry
+ * @param {readonly Project[]} projects
+ * @returns {SearchEntry[]}
+ */
 export function searchData(projects) {
   return projects.map((project) => ({
     slug: project.slug,

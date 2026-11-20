@@ -4,6 +4,9 @@ import { test, expect } from "@playwright/test";
 import { loadCatalog } from "../src/catalog.mjs";
 
 const catalog = await loadCatalog(new URL("../", import.meta.url));
+/** @import { Page } from "@playwright/test" */
+
+/** @param {Page} page */
 const visibleRows = (page) => page.locator("[data-repository]:visible");
 
 test("index, category navigation, shareable filters, and browser history", async ({ page }) => {
@@ -13,7 +16,7 @@ test("index, category navigation, shareable filters, and browser history", async
   await expect(visibleRows(page)).toHaveCount(21);
   await page.getByRole("button", { name: "Agents 4", exact: true }).click();
   await expect(visibleRows(page)).toHaveCount(4);
-  await expect(page).toHaveURL(/area=agents/);
+  await expect(page).toHaveURL(/area=agents/v);
   await page.getByRole("button", { name: "Telemetry 2", exact: true }).click();
   await expect(visibleRows(page)).toHaveCount(2);
   await page.goBack();
@@ -40,7 +43,7 @@ test("full-text search finds alternative discussion and recovers from no results
   await page.getByRole("searchbox").fill("zzq-unmatched-271828");
   await expect(page.getByText("Try a different line of inquiry.")).toBeVisible();
   await expect(page.locator("#result-count")).toHaveText("0 repositories / 21");
-  await page.getByRole("button", { name: /Clear search and filters/ }).click();
+  await page.getByRole("button", { name: /Clear search and filters/v }).click();
   await expect(visibleRows(page)).toHaveCount(21);
   await expect(page.getByRole("searchbox")).toBeFocused();
 });
@@ -53,7 +56,7 @@ test("every article supports direct entry, references, and narrow screens withou
     expect(response.status(), project.slug).toBe(200);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(project.slug);
     await expect(page.locator(".references li")).toHaveCount(project.sources.length);
-    await expect(page.getByRole("link", { name: /Source repository/ })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: /Source repository/v })).toHaveAttribute(
       "href",
       `https://github.com/mathematic-inc/${project.slug}`,
     );
@@ -68,7 +71,7 @@ test("every article supports direct entry, references, and narrow screens withou
 test("footnotes, print control, and downloadable citation work", async ({ page }) => {
   await page.goto("/projects/earl/");
   await page.locator(".citation a").first().click();
-  await expect(page).toHaveURL(/#ref-1$/);
+  await expect(page).toHaveURL(/#ref-1$/v);
   await expect(page.locator("#ref-1")).toBeInViewport();
   const bib = await page.request.get("/projects/earl/cite.bib");
   expect(bib.ok()).toBe(true);
@@ -94,7 +97,7 @@ test("keyboard shortcut, invalid query state, and unknown pages have useful outc
   await expect(page.getByRole("searchbox")).toBeFocused();
   const response = await page.goto("/projects/unknown/");
   expect(response.status()).toBe(404);
-  await expect(page.getByRole("link", { name: /Return to the repository index/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Return to the repository index/v })).toBeVisible();
 });
 
 test("all content and reference navigation remain available without JavaScript", async ({
@@ -133,9 +136,8 @@ test("copy citation uses the clipboard and explains a denied clipboard permissio
     "https://mathematic.io/projects/earl/",
   );
   await page.evaluate(() => {
-    navigator.clipboard.writeText = async () => {
-      throw new DOMException("Permission denied", "NotAllowedError");
-    };
+    navigator.clipboard.writeText = () =>
+      Promise.reject(new DOMException("Permission denied", "NotAllowedError"));
   });
   await page.getByRole("button", { name: "Copy citation", exact: true }).click();
   await expect(

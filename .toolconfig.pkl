@@ -11,3 +11,52 @@ toolconfig {
       path = "profiles/org/.toolconfig.pkl"
     })
 }
+
+sections {
+  ["*"] {
+    oxlint {
+      rules {
+        ["typescript/prefer-readonly-parameter-types"] {
+          "deny"
+          new {
+            allow =
+              List(
+                // The DOM and ECMAScript types that the page script and the tests receive have writable members.
+                new Dynamic {
+                  from = "lib"
+                  name =
+                    List(
+                      "Element",
+                      "Error",
+                      "Event",
+                      "HTMLElement",
+                      "KeyboardEvent",
+                      "RegExpExecArray",
+                      "URL",
+                    )
+                },
+                // The test fixtures of Playwright have writable members.
+                new Dynamic {
+                  from = "package"
+                  package = "playwright"
+                  name = List("PlaywrightTestArgs")
+                },
+                // The Playwright page and route that the tests receive have writable members.
+                new Dynamic {
+                  from = "package"
+                  package = "playwright-core"
+                  name = List("Page", "Route")
+                },
+                // The Node.js request and response of the preview server have writable members.
+                new Dynamic {
+                  from = "package"
+                  package = "@types/node"
+                  name = List("IncomingMessage", "ServerResponse")
+                },
+              )
+          }
+        }
+      }
+    }
+  }
+}
